@@ -362,7 +362,7 @@ function kvGet(k){return idb().then(function(db){return new Promise(function(res
 function kvSet(k,v){return idb().then(function(db){return new Promise(function(res){var t=db.transaction('kv','readwrite');t.objectStore('kv').put(v,k);t.oncomplete=function(){res();};t.onerror=function(){res();};});}).catch(function(){});}
 function D(o,m,k){return{t:'d',o:o,m:m,k:k||{}};}
 function F(o,m,c){return{t:'f',o:o,m:m,c:c};}
-function seed(){return D('root','755',{etc:D('root','755',{hostname:F('root','644','lacuna\n'),motd:F('root','644','Lacuna OS 0.12\n')}),home:D('root','755',{user:D('user','755',{'readme.txt':F('user','644','Lacuna OSへようこそ。\n')})}),root:D('root','700',{'secret.txt':F('root','600','rootだけが読めるファイルです。\n')}),tmp:D('root','777')});}
+function seed(){return D('root','755',{etc:D('root','755',{hostname:F('root','644','lacuna\n'),motd:F('root','644','Lacuna OS 0.13\n')}),home:D('root','755',{user:D('user','755',{'readme.txt':F('user','644','Lacuna OSへようこそ。\n')})}),root:D('root','700',{'secret.txt':F('root','600','rootだけが読めるファイルです。\n')}),tmp:D('root','777')});}
 function kvClear(){return idb().then(function(db){return new Promise(function(res){var t=db.transaction('kv','readwrite');t.objectStore('kv').clear();t.oncomplete=function(){res();};t.onerror=function(){res();};});}).catch(function(){});}
 var ITER=600000,enc=new TextEncoder(),dec=new TextDecoder(),dk=null,dkRaw=null,meta=null;
 var metaReady=(async function(){meta=await kvGet('meta');})();
@@ -396,7 +396,7 @@ help:function(){return 'help pwd ls cd cat echo mkdir touch rm chmod\nwhoami id 
 pwd:function(a,X){return X.S.cwd;},
 echo:function(a){return a.join(' ');},
 date:function(){return new Date().toString();},
-uname:function(){return 'Lacuna OS 0.12 (browser)';},
+uname:function(){return 'Lacuna OS 0.13 (browser)';},
 whoami:function(a,X){return X.S.user;},
 id:function(a,X){return X.S.user==='root'?'uid=0(root) gid=0(root)':'uid=1000('+X.S.user+') gid=1000('+X.S.user+')';},
 open:function(a){if(APPS[a[0]]){openApp(a[0]);return a[0]+' を開きました';}return '使い方: open browser | term | notes | settings | about';},
@@ -443,7 +443,7 @@ h+='<p class="dim">'+(root?'rootは、他のユーザーのパスワードも変
 if(root)h+='<label class="r2"><span>対象</span><select id="tg"><option value="root">root</option><option value="user">user</option></select></label>';
 h+='<label class="pw" id="cw"><span>現在のパスワード</span><input type="password" id="cp" autocomplete="off"></label><label class="pw"><span>新しいパスワード(8文字以上)</span><input type="password" id="n1" autocomplete="new-password"></label><label class="pw"><span>もう一度</span><input type="password" id="n2" autocomplete="new-password"></label><button class="sb pri" data-a="pw" style="min-height:46px;border-radius:8px">変更する</button>';
 }else{
-h+=[['バージョン','Lacuna OS 0.12'],['ユーザー',session.user],['暗号化','AES-GCM / PBKDF2 60万回'],['自動ログアウト',uefi.idle?uefi.idle+'分(UEFIで変更)':'なし(UEFIで変更)'],['Secure Boot',uefi.sb?'ON':'OFF']].map(function(r){return '<div class="r2"><span>'+r[0]+'</span><b>'+r[1]+'</b></div>';}).join('');
+h+=[['バージョン','Lacuna OS 0.13'],['ユーザー',session.user],['暗号化','AES-GCM / PBKDF2 60万回'],['自動ログアウト',uefi.idle?uefi.idle+'分(UEFIで変更)':'なし(UEFIで変更)'],['Secure Boot',uefi.sb?'ON':'OFF']].map(function(r){return '<div class="r2"><span>'+r[0]+'</span><b>'+r[1]+'</b></div>';}).join('');
 if(session.user==='root')h+='<button class="sb" data-a="rs" style="min-height:46px">'+(armed?'もう一度押すと、すべて消します':'すべて初期化(rootのみ)')+'</button>';
 }
 b.innerHTML=h+'<p id="sm" role="status">'+msg+'</p></div>';
@@ -477,6 +477,16 @@ draw();
 var proxyP=null,scram=null;
 function loadScript(src){return new Promise(function(res,rej){var s=document.createElement('script');s.src=src;s.onload=res;s.onerror=function(){rej(new Error(src+' を読み込めませんでした'));};document.head.appendChild(s);});}
 async function sessionState(){try{var r=await fetch('/api/session',{credentials:'same-origin'});if(!r.ok||(r.headers.get('content-type')||'').indexOf('json')<0)return 'none';return (await r.json()).ok?'open':'locked';}catch(e){return 'none';}}
+async function healScramDb(){
+try{
+if(!indexedDB.databases)return;
+var l=await indexedDB.databases();
+if(!l.some(function(d){return d.name==='$scramjet';}))return;
+var has=await new Promise(function(res){var q=indexedDB.open('$scramjet');q.onsuccess=function(){var ok=q.result.objectStoreNames.contains('config');q.result.close();res(ok);};q.onerror=function(){res(true);};});
+if(has)return;
+await new Promise(function(res){var d=indexedDB.deleteDatabase('$scramjet');d.onsuccess=d.onerror=d.onblocked=function(){res();};setTimeout(res,3000);});
+}catch(e){}
+}
 function initProxy(){
 if(proxyP)return proxyP;
 proxyP=(async function(){
@@ -484,6 +494,7 @@ if(!('serviceWorker' in navigator))throw new Error('このブラウザは、Serv
 await loadScript('/baremux/index.js');await loadScript('/scram/scramjet.all.js');
 await navigator.serviceWorker.register('/sw.js',{scope:'/'});
 await navigator.serviceWorker.ready;
+await healScramDb();
 var C=$scramjetLoadController().ScramjetController;
 scram=new C({files:{wasm:'/scram/scramjet.wasm.wasm',all:'/scram/scramjet.all.js',sync:'/scram/scramjet.sync.js'}});
 await scram.init();
@@ -540,7 +551,7 @@ start();
 }
 function mkAbout(b){
 b.className+=' ab';
-b.innerHTML='<h1>Lacuna OS 0.12</h1><p>ブラウザの中で動くデスクトップです。ウィンドウは、移動、リサイズ、最小化、最大化、閉じるができます。</p><p>ターミナルから、ファイルとユーザー(root)を試せます。パスワードで保存データを暗号化しています。ブラウザアプリを追加しました(サーバー版のみ動きます)。次に作るもの: ブラウザアプリ。</p>';
+b.innerHTML='<h1>Lacuna OS 0.13</h1><p>ブラウザの中で動くデスクトップです。ウィンドウは、移動、リサイズ、最小化、最大化、閉じるができます。</p><p>ターミナルから、ファイルとユーザー(root)を試せます。パスワードで保存データを暗号化しています。ブラウザアプリを追加しました(サーバー版のみ動きます)。次に作るもの: ブラウザアプリ。</p>';
 }
 function mkNotes(b){
 var t=document.createElement('textarea');
@@ -561,7 +572,7 @@ function prompt(){hdr.textContent='┌──('+S.user+'㉿'+HN+')-['+short(S)+']
 function print(t,c){var d=document.createElement('div');d.textContent=t;if(c)d.className=c;out.appendChild(d);b.scrollTop=b.scrollHeight;}
 function ask(q){return new Promise(function(res){pend=res;inp.type='password';ps.textContent=q;hdr.hidden=true;inp.focus();});}
 var X={S:S,ask:ask};
-print('Lacuna OS 0.12 -- help でコマンド一覧','dim');
+print('Lacuna OS 0.13 -- help でコマンド一覧','dim');
 prompt();
 async function exec(v){
 var t=v.match(/"[^"]*"|'[^']*'|\S+/g).map(function(x){return /^["']/.test(x)?x.slice(1,-1):x;});

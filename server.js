@@ -66,6 +66,7 @@ app.use((req, res, next) => {
   next();
 });
 app.use(express.json({ limit: "1kb" }));
+app.get("/sw.js", (q, r, n) => { r.setHeader("Cache-Control", "no-cache"); n(); });
 
 app.get("/healthz", (q, r) => r.type("text").send("ok")); // uptimeボット用
 app.get("/api/session", (q, r) => r.json({ ok: okToken(getCookie(q, COOKIE)) }));
