@@ -48,3 +48,8 @@ ACCESS_PASSPHRASE=好きな合言葉 node server.js
 
 ## ライセンス
 - Scramjet、libcurl-transport、bare-mux などは、AGPL-3.0です。改変したものをネットで公開する場合は、ソースの提供が必要になります。このzipは、改変せずに配信しています。
+
+## バージョンについて(重要)
+- `package.json` は、動作を確認したバージョンに固定しています(Scramjet 1.1.0 など)。`package-lock.json` も、一緒に入れてください。
+- Scramjetの `alpha`(2.x)には変えないでください。ファイル名もAPIも違い(`scramjet.all.js` がなくなります)、`sw.js` と `index.html` の書き方が合いません。
+- 上げたい時は、すべて同じ時期のバージョンにそろえて、`sw.js` と `index.html` も書き直す必要があります。
