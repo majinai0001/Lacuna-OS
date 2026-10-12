@@ -109,7 +109,7 @@ await mount("/libcurl/", [], () => pkgDist("libcurl-transport"));
 const fontDir = (name) => path.join(__dirname, "node_modules/@fontsource", name);
 await mount("/fonts/zen-maru/", [], () => fontDir("zen-maru-gothic"));
 await mount("/fonts/jetbrains/", [], () => fontDir("jetbrains-mono"));
-await mount("/scram/", ["@mercuryworkshop/scramjet/path", "@mercuryworkshop/scramjet"], (m) => m.scramjetPath || (fs.existsSync(dist) ? dist : null));
+app.use("/scram/", express.static(path.join(__dirname, "node_modules/@mercuryworkshop/scramjet/dist")));
 
 app.use(express.static(path.join(__dirname, "public"), { extensions: ["html"] }));
 
