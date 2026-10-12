@@ -362,7 +362,7 @@ function kvGet(k){return idb().then(function(db){return new Promise(function(res
 function kvSet(k,v){return idb().then(function(db){return new Promise(function(res){var t=db.transaction('kv','readwrite');t.objectStore('kv').put(v,k);t.oncomplete=function(){res();};t.onerror=function(){res();};});}).catch(function(){});}
 function D(o,m,k){return{t:'d',o:o,m:m,k:k||{}};}
 function F(o,m,c){return{t:'f',o:o,m:m,c:c};}
-function seed(){return D('root','755',{etc:D('root','755',{hostname:F('root','644','lacuna\n'),motd:F('root','644','Lacuna OS 0.13\n')}),home:D('root','755',{user:D('user','755',{'readme.txt':F('user','644','Lacuna OSへようこそ。\n')})}),root:D('root','700',{'secret.txt':F('root','600','rootだけが読めるファイルです。\n')}),tmp:D('root','777')});}
+function seed(){return D('root','755',{etc:D('root','755',{hostname:F('root','644','lacuna\n'),motd:F('root','644','Lacuna OS 0.14\n')}),home:D('root','755',{user:D('user','755',{'readme.txt':F('user','644','Lacuna OSへようこそ。\n')})}),root:D('root','700',{'secret.txt':F('root','600','rootだけが読めるファイルです。\n')}),tmp:D('root','777')});}
 function kvClear(){return idb().then(function(db){return new Promise(function(res){var t=db.transaction('kv','readwrite');t.objectStore('kv').clear();t.oncomplete=function(){res();};t.onerror=function(){res();};});}).catch(function(){});}
 var ITER=600000,enc=new TextEncoder(),dec=new TextDecoder(),dk=null,dkRaw=null,meta=null;
 var metaReady=(async function(){meta=await kvGet('meta');})();
@@ -396,7 +396,7 @@ help:function(){return 'help pwd ls cd cat echo mkdir touch rm chmod\nwhoami id 
 pwd:function(a,X){return X.S.cwd;},
 echo:function(a){return a.join(' ');},
 date:function(){return new Date().toString();},
-uname:function(){return 'Lacuna OS 0.13 (browser)';},
+uname:function(){return 'Lacuna OS 0.14 (browser)';},
 whoami:function(a,X){return X.S.user;},
 id:function(a,X){return X.S.user==='root'?'uid=0(root) gid=0(root)':'uid=1000('+X.S.user+') gid=1000('+X.S.user+')';},
 open:function(a){if(APPS[a[0]]){openApp(a[0]);return a[0]+' を開きました';}return '使い方: open browser | term | notes | settings | about';},
@@ -414,13 +414,14 @@ exit:function(a,X){var p=X.S.stack.pop();if(!p){logout();return '';}X.S.user=p.u
 sudo:async function(a,X){var S=X.S;if(!a.length)throw new Error('使い方: sudo コマンド');if(S.user!=='root'&&!await ok(S.user,await X.ask(S.user+' のパスワード: ')))throw new Error('認証に失敗しました');var c=a.shift();if(!CMD.hasOwnProperty(c))throw new Error(c+': コマンドが見つかりません');var S2={user:'root',cwd:S.cwd,stack:[]};var r=await CMD[c](a,{S:S2,ask:X.ask});S.cwd=S2.cwd;return r;},
 passwd:async function(a,X){var S=X.S,t=a[0]||S.user;if(!meta.slots[t])throw new Error('ユーザー '+t+' は存在しません');if(S.user!=='root'){if(t!==S.user)throw new Error('許可がありません');if(!await ok(t,await X.ask('現在のパスワード: ')))throw new Error('認証に失敗しました');}var n1=await X.ask('新しいパスワード: '),n2=await X.ask('もう一度: ');if(n1!==n2)throw new Error('パスワードが一致しません');if(n1.length<8)throw new Error('8文字以上にしてください');meta.slots[t]=await mkSlot(n1,dkRaw);save();return 'パスワードを変更しました';},
 reset:async function(a,X){if(X.S.user!=='root')throw new Error('rootだけが実行できます');clearTimeout(stt);await kvClear();fs=null;dk=null;dkRaw=null;meta=null;setTimeout(function(){closeAll();setup();},0);return 'すべて消しました。初期設定の画面に戻ります。';}};
-var PD={theme:'auto',acc:'#367bf0',wp:'aurora'},WPS=['aurora','dusk','forest','paper','plain'];
+var SEARCH={ddg:'https://html.duckduckgo.com/html/?q=',bing:'https://www.bing.com/search?q=',brave:'https://search.brave.com/search?q=',google:'https://www.google.com/search?q='},SE='ddg';
+var PD={theme:'auto',acc:'#367bf0',wp:'aurora',se:'ddg'},WPS=['aurora','dusk','forest','paper','plain'];
 var ACC=[['青','#367bf0'],['紫','#7c3aed'],['緑','#15803d'],['橙','#c2410c'],['赤紫','#be185d']];
 function applyPrefs(p){
 var r=document.documentElement;
 if(p.theme==='dark'||p.theme==='light')r.setAttribute('data-theme',p.theme);else r.removeAttribute('data-theme');
 r.style.setProperty('--acc',p.acc||PD.acc);
-desk.setAttribute('data-wp',WPS.indexOf(p.wp)>=0?p.wp:'aurora');
+desk.setAttribute('data-wp',WPS.indexOf(p.wp)>=0?p.wp:'aurora');SE=SEARCH[p.se]?p.se:'ddg';
 }
 function loadPrefs(){try{var n=find('~/.config/lacuna.json',{user:session.user,cwd:'/',stack:[]});return Object.assign({},PD,n&&n.t==='f'?JSON.parse(n.c):{});}catch(e){return Object.assign({},PD);}}
 function savePrefs(p){var S={user:session.user,cwd:'/',stack:[]},n=fs;norm('~/.config',S).forEach(function(x){if(!n.k[x])n.k[x]=D(S.user,'755');n=n.k[x];});wf('~/.config/lacuna.json',JSON.stringify(p),false,S);}
@@ -436,6 +437,7 @@ if(tab==='look'){
 h+='<fieldset><legend>テーマ</legend>'+[['auto','自動'],['dark','ダーク'],['light','ライト']].map(function(x){return '<label><input type="radio" name="th" value="'+x[0]+'"'+(p.theme===x[0]?' checked':'')+'> '+x[1]+'</label>';}).join('')+'</fieldset>';
 h+='<fieldset><legend>アクセント色</legend><div class="sw">'+ACC.map(function(c){return '<button data-c="'+c[1]+'" aria-label="'+c[0]+'" aria-pressed="'+(p.acc===c[1])+'" style="background:'+c[1]+'"></button>';}).join('')+'</div></fieldset>';
 h+='<label class="r2"><span>壁紙</span><select id="wp">'+opt('aurora','オーロラ',p.wp)+opt('dusk','夕焼け',p.wp)+opt('forest','森',p.wp)+opt('paper','紙(ライト向け)',p.wp)+opt('plain','無地',p.wp)+'</select></label>';
+h+='<label class="r2"><span>検索エンジン</span><select id="se">'+opt('ddg','DuckDuckGo(軽量版)',p.se)+opt('bing','Bing',p.se)+opt('brave','Brave',p.se)+opt('google','Google',p.se)+'</select></label>';
 h+='<p class="dim">設定は、ユーザーごとに暗号化して保存されます。</p>';
 }else if(tab==='acc'){
 var root=session.user==='root';
@@ -443,7 +445,7 @@ h+='<p class="dim">'+(root?'rootは、他のユーザーのパスワードも変
 if(root)h+='<label class="r2"><span>対象</span><select id="tg"><option value="root">root</option><option value="user">user</option></select></label>';
 h+='<label class="pw" id="cw"><span>現在のパスワード</span><input type="password" id="cp" autocomplete="off"></label><label class="pw"><span>新しいパスワード(8文字以上)</span><input type="password" id="n1" autocomplete="new-password"></label><label class="pw"><span>もう一度</span><input type="password" id="n2" autocomplete="new-password"></label><button class="sb pri" data-a="pw" style="min-height:46px;border-radius:8px">変更する</button>';
 }else{
-h+=[['バージョン','Lacuna OS 0.13'],['ユーザー',session.user],['暗号化','AES-GCM / PBKDF2 60万回'],['自動ログアウト',uefi.idle?uefi.idle+'分(UEFIで変更)':'なし(UEFIで変更)'],['Secure Boot',uefi.sb?'ON':'OFF']].map(function(r){return '<div class="r2"><span>'+r[0]+'</span><b>'+r[1]+'</b></div>';}).join('');
+h+=[['バージョン','Lacuna OS 0.14'],['ユーザー',session.user],['暗号化','AES-GCM / PBKDF2 60万回'],['自動ログアウト',uefi.idle?uefi.idle+'分(UEFIで変更)':'なし(UEFIで変更)'],['Secure Boot',uefi.sb?'ON':'OFF']].map(function(r){return '<div class="r2"><span>'+r[0]+'</span><b>'+r[1]+'</b></div>';}).join('');
 if(session.user==='root')h+='<button class="sb" data-a="rs" style="min-height:46px">'+(armed?'もう一度押すと、すべて消します':'すべて初期化(rootのみ)')+'</button>';
 }
 b.innerHTML=h+'<p id="sm" role="status">'+msg+'</p></div>';
@@ -470,6 +472,7 @@ b.addEventListener('change',function(e){
 var el=e.target;
 if(el.name==='th'){p.theme=el.value;applyPrefs(p);savePrefs(p);}
 else if(el.id==='wp'){p.wp=el.value;applyPrefs(p);savePrefs(p);}
+else if(el.id==='se'){p.se=el.value;applyPrefs(p);savePrefs(p);}
 else if(el.id==='tg'){var cw=b.querySelector('#cw');if(cw)cw.hidden=(el.value!==session.user);}
 });
 draw();
@@ -504,7 +507,7 @@ await conn.setTransport('/libcurl/index.mjs',[{websocket:(location.protocol==='h
 proxyP.catch(function(){proxyP=null;});
 return proxyP;
 }
-function toUrl(v){v=v.trim();if(!v)return '';var u=/^https?:\/\//i.test(v)?v:(/^[\w-]+(\.[\w-]+)+(:\d+)?([\/?#]\S*)?$/.test(v)?'https://'+v:'');return u||'https://duckduckgo.com/?q='+encodeURIComponent(v);}
+function toUrl(v){v=v.trim();if(!v)return '';var u=/^https?:\/\//i.test(v)?v:(/^[\w-]+(\.[\w-]+)+(:\d+)?([\/?#]\S*)?$/.test(v)?'https://'+v:'');return u||SEARCH[SE]+encodeURIComponent(v);}
 function mkBrowser(b){
 b.className+=' br';
 var ar='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">';
@@ -538,7 +541,7 @@ if(st==='locked'){unlock();return;}
 await initProxy();
 frame=scram.createFrame(fr);
 frame.addEventListener('urlchange',function(e){var u=e.url;try{if(u.indexOf(location.origin)===0)u=scram.decodeUrl(u);}catch(x){}inp.value=u;});
-msg('検索、またはURLを入力してください。',[['DuckDuckGo',function(){go('https://duckduckgo.com/');}],['Wikipedia(日本語)',function(){go('https://ja.wikipedia.org/');}]]);
+msg('検索、またはURLを入力してください。',[['DuckDuckGo(軽量版)',function(){go('https://html.duckduckgo.com/html/');}],['Bing',function(){go('https://www.bing.com/');}],['Brave',function(){go('https://search.brave.com/');}],['Wikipedia(日本語)',function(){go('https://ja.wikipedia.org/');}]]);
 }catch(e){msg('起動に失敗しました: '+e.message,[['もう一度試す',start]]);}
 }
 b.querySelector('.bu').addEventListener('submit',function(e){e.preventDefault();go(inp.value);});
@@ -551,7 +554,7 @@ start();
 }
 function mkAbout(b){
 b.className+=' ab';
-b.innerHTML='<h1>Lacuna OS 0.13</h1><p>ブラウザの中で動くデスクトップです。ウィンドウは、移動、リサイズ、最小化、最大化、閉じるができます。</p><p>ターミナルから、ファイルとユーザー(root)を試せます。パスワードで保存データを暗号化しています。ブラウザアプリを追加しました(サーバー版のみ動きます)。次に作るもの: ブラウザアプリ。</p>';
+b.innerHTML='<h1>Lacuna OS 0.14</h1><p>ブラウザの中で動くデスクトップです。ウィンドウは、移動、リサイズ、最小化、最大化、閉じるができます。</p><p>ターミナルから、ファイルとユーザー(root)を試せます。パスワードで保存データを暗号化しています。ブラウザアプリを追加しました(サーバー版のみ動きます)。次に作るもの: ブラウザアプリ。</p>';
 }
 function mkNotes(b){
 var t=document.createElement('textarea');
@@ -572,7 +575,7 @@ function prompt(){hdr.textContent='┌──('+S.user+'㉿'+HN+')-['+short(S)+']
 function print(t,c){var d=document.createElement('div');d.textContent=t;if(c)d.className=c;out.appendChild(d);b.scrollTop=b.scrollHeight;}
 function ask(q){return new Promise(function(res){pend=res;inp.type='password';ps.textContent=q;hdr.hidden=true;inp.focus();});}
 var X={S:S,ask:ask};
-print('Lacuna OS 0.13 -- help でコマンド一覧','dim');
+print('Lacuna OS 0.14 -- help でコマンド一覧','dim');
 prompt();
 async function exec(v){
 var t=v.match(/"[^"]*"|'[^']*'|\S+/g).map(function(x){return /^["']/.test(x)?x.slice(1,-1):x;});
