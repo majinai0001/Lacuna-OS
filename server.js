@@ -101,15 +101,14 @@ async function mount(prefix, specs, pick) {
 }
 const dist = path.join(__dirname, "node_modules/@mercuryworkshop/scramjet/dist");
 await mount("/baremux/", ["@mercuryworkshop/bare-mux/node"], (m) => m.baremuxPath);
-// epoxy / libcurl はブラウザ用の部品なので、パッケージの dist フォルダをそのまま配る
+// libcurl はブラウザ用の部品なので、パッケージの dist フォルダをそのまま配る
 const pkgDist = (name) => path.join(__dirname, "node_modules/@mercuryworkshop", name, "dist");
-await mount("/epoxy/", [], () => pkgDist("epoxy-transport"));
 await mount("/libcurl/", [], () => pkgDist("libcurl-transport"));
 // フォントは自分のサーバーから配る(外部サイトだと、cross-origin isolationで読み込めないことがあるため)
 const fontDir = (name) => path.join(__dirname, "node_modules/@fontsource", name);
 await mount("/fonts/zen-maru/", [], () => fontDir("zen-maru-gothic"));
 await mount("/fonts/jetbrains/", [], () => fontDir("jetbrains-mono"));
-app.use("/scram/", express.static(path.join(__dirname, "node_modules/@mercuryworkshop/scramjet/dist")));
+await mount("/scram/", ["@mercuryworkshop/scramjet/path", "@mercuryworkshop/scramjet"], (m) => m.scramjetPath || (fs.existsSync(dist) ? dist : null));
 
 app.use(express.static(path.join(__dirname, "public"), { extensions: ["html"] }));
 

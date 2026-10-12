@@ -53,3 +53,7 @@ ACCESS_PASSPHRASE=好きな合言葉 node server.js
 - `package.json` は、動作を確認したバージョンに固定しています(Scramjet 1.1.0 など)。`package-lock.json` も、一緒に入れてください。
 - Scramjetの `alpha`(2.x)には変えないでください。ファイル名もAPIも違い(`scramjet.all.js` がなくなります)、`sw.js` と `index.html` の書き方が合いません。
 - 上げたい時は、すべて同じ時期のバージョンにそろえて、`sw.js` と `index.html` も書き直す必要があります。
+
+## 部品の組み合わせ(重要)
+- `bare-mux 2.1.9` には、`libcurl-transport 1.5.2` を組み合わせます。`libcurl-transport 2.x` は、ヘッダーの渡し方が違い、`headers is not iterable` というエラーになります。
+- `epoxy-transport` は使っていないので、外しました。
