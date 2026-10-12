@@ -320,7 +320,88 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 .bs p{margin:0;max-width:420px}
 .ul{display:flex;gap:8px}
 .ul input{height:40px;border:1px solid var(--cb);border-radius:4px;background:var(--ctl);color:var(--text);font:inherit;padding:0 12px}
+.br{--tabs:color-mix(in srgb,var(--win) 80%,#000);position:relative;overflow:hidden}
+.tabs2{display:flex;align-items:flex-end;gap:2px;padding:6px 8px 0;background:var(--tabs);overflow-x:auto;flex:none;min-height:38px;scrollbar-width:none}
+.tab{display:flex;align-items:center;gap:6px;flex:1 1 0;min-width:84px;max-width:220px;height:32px;padding:0 6px 0 10px;border-radius:8px 8px 0 0;color:var(--mute);font-size:12px;cursor:default}
+.tab:hover{background:var(--ctl)}
+.tab.on{background:var(--win);color:var(--text)}
+.tab .tn{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tab svg{width:14px;height:14px;display:block}
+.tab button{width:22px;height:22px;flex:none;border:0;border-radius:50%;background:none;color:inherit;display:grid;place-items:center;cursor:pointer}
+.tab button:hover{background:var(--ctlh)}
+.nt{flex:none;align-self:center;width:30px;height:30px;border:0;border-radius:50%;background:none;color:var(--mute);display:grid;place-items:center;cursor:pointer}
+.nt:hover{background:var(--ctl)}
+.nt svg{width:14px;height:14px}
+.br .bt{background:var(--win);border-bottom:1px solid var(--line);padding:6px 8px;gap:2px}
+.bt button:disabled{opacity:.35;cursor:default}
+.bu{display:flex;align-items:center;height:34px;border:1px solid transparent;border-radius:17px;background:var(--ctl);padding:0 4px 0 8px;margin:0 4px}
+.bu:focus-within{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc)}
+.si{display:grid;place-items:center;width:20px;color:var(--mute)}
+.si svg{width:14px;height:14px}
+.bu input{flex:1;min-width:0;height:32px;border:0;outline:0;background:none;color:var(--text);font:inherit;padding:0 6px;border-radius:0;box-shadow:none}
+.bu button{position:relative;width:30px;height:30px;border-radius:50%;color:var(--mute)}
+.bu button svg{width:16px;height:16px}
+.bu .sh{color:#fb542b}
+.bd2{position:absolute;top:-1px;right:-3px;min-width:14px;height:14px;padding:0 3px;border-radius:7px;background:#fb542b;color:#fff;font:700 9px/14px system-ui,sans-serif;font-style:normal;text-align:center;box-sizing:border-box}
+.bd2[hidden]{display:none}
+.pg{position:absolute;inset:0;overflow:auto;background:var(--win);z-index:1}
+.pg[hidden]{display:none}
+.ip{max-width:640px;margin:0 auto;padding:28px 20px}
+.ip h2{margin:0 0 18px;font-size:22px}
+.ip h3{margin:22px 0 6px;font-size:14px;color:var(--mute)}
+.nts input{width:100%;box-sizing:border-box;height:46px;border:1px solid var(--cb);border-radius:23px;background:var(--ctl);color:var(--text);font:inherit;padding:0 20px}
+.nts input:focus{outline:none;border-color:var(--acc)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px;margin-top:24px}
+.tile{display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px 6px;border:0;border-radius:8px;background:none;color:var(--text);font:inherit;font-size:12px;cursor:pointer}
+.tile:hover{background:var(--ctl)}
+.tile b{width:44px;height:44px;border-radius:50%;background:var(--ctlh);display:grid;place-items:center;font-size:18px}
+.tile span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.set{display:flex;flex-direction:column;gap:12px}
+.set label{display:flex;flex-direction:column;gap:6px}
+.set .sw2,.sw2{flex-direction:row!important;justify-content:space-between;align-items:center}
+.set select,.set input[type=text]{height:40px;border:1px solid var(--cb);border-radius:4px;background:var(--ctl);color:var(--text);font:inherit;padding:0 12px}
+.sw2 input[type=checkbox]{appearance:none;-webkit-appearance:none;position:relative;flex:none;width:40px;height:20px;margin:0;border-radius:10px;border:1px solid var(--mute);background:transparent;cursor:pointer}
+.sw2 input[type=checkbox]::after{content:"";position:absolute;top:3px;left:3px;width:12px;height:12px;border-radius:50%;background:var(--mute);transition:transform .15s var(--ease),background .15s}
+.sw2 input[type=checkbox]:checked{background:var(--acc);border-color:var(--acc)}
+.sw2 input[type=checkbox]:checked::after{transform:translateX(20px);background:#fff}
+.row2{display:flex;gap:8px;flex-wrap:wrap}
+.row2 input{flex:1;min-width:0;height:40px;border:1px solid var(--cb);border-radius:4px;background:var(--ctl);color:var(--text);font:inherit;padding:0 12px}
+.sb{min-height:40px;padding:0 14px;border:1px solid var(--cb);border-radius:4px;background:var(--ctl);color:var(--text);font:inherit;cursor:pointer}
+.sb:hover{background:var(--ctlh)}
+.dim2{color:var(--mute);margin:4px 0;font-size:13px}
+.lst{display:flex;flex-direction:column;margin-top:12px}
+.li{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:8px 10px;border:0;border-radius:4px;background:none;color:var(--text);font:inherit;text-align:left;cursor:pointer;min-width:0}
+.li:hover{background:var(--ctl)}
+.li b{font-weight:500}
+.li span,.li i{color:var(--mute);font-size:12px;font-style:normal;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.li2{display:flex;align-items:center;gap:8px}
+.li2 .li{flex:1}
+.dv{flex:none;height:44%;display:flex;flex-direction:column;border-top:1px solid var(--line);background:var(--win);z-index:2}
+.dv[hidden]{display:none}
+.dvh{display:flex;align-items:center;gap:2px;padding:0 6px;border-bottom:1px solid var(--line);flex:none}
+.dvh span{flex:1}
+.dvh button{min-height:34px;padding:0 12px;border:0;border-bottom:2px solid transparent;background:none;color:var(--mute);font:inherit;font-size:12px;cursor:pointer}
+.dvh button.on{color:var(--text);border-bottom-color:var(--acc)}
+.dvh button svg{width:12px;height:12px}
+.dvb{flex:1;min-height:0;overflow:auto;padding:6px 10px;font:12px/1.6 "JetBrains Mono","Zen Maru Gothic",monospace}
+.dvb div,.dvb pre{white-space:pre-wrap;word-break:break-all;margin:0}
+.k-error{color:#f87171}.k-warn{color:#fbbf24}.k-in{color:var(--mute)}.k-out{color:#60a5fa}
+.nr{display:flex;gap:10px;align-items:baseline}
+.nr b{min-width:42px}
+.nr .u{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--mute)}
+.nr.er b{color:#f87171}.nr.bl b{color:#fb542b}
+.dvi{display:flex;align-items:center;gap:6px;padding:0 10px;border-top:1px solid var(--line);flex:none}
+.dvi[hidden]{display:none}
+.dvi input{flex:1;height:34px;border:0;outline:0;background:none;color:var(--text);font:12px "JetBrains Mono","Zen Maru Gothic",monospace}
+.pop{position:absolute;z-index:6;min-width:200px;padding:6px;border:1px solid var(--line);border-radius:8px;background:var(--glass);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.pop[hidden]{display:none}
+.mn{right:8px;top:80px;display:flex;flex-direction:column}
+.mn button{display:flex;justify-content:space-between;align-items:center;gap:20px;min-height:36px;padding:0 12px;border:0;border-radius:4px;background:none;color:var(--text);font:inherit;text-align:left;cursor:pointer}
+.mn button:hover{background:var(--ctl)}
+.mn span{color:var(--mute);font-size:12px}
+.spop{right:48px;top:80px;width:260px;padding:12px;display:flex;flex-direction:column;gap:8px}
 </style>
+
 </head>
 <body>
 <div id="desk">
@@ -362,7 +443,7 @@ function kvGet(k){return idb().then(function(db){return new Promise(function(res
 function kvSet(k,v){return idb().then(function(db){return new Promise(function(res){var t=db.transaction('kv','readwrite');t.objectStore('kv').put(v,k);t.oncomplete=function(){res();};t.onerror=function(){res();};});}).catch(function(){});}
 function D(o,m,k){return{t:'d',o:o,m:m,k:k||{}};}
 function F(o,m,c){return{t:'f',o:o,m:m,c:c};}
-function seed(){return D('root','755',{etc:D('root','755',{hostname:F('root','644','lacuna\n'),motd:F('root','644','Lacuna OS 0.14\n')}),home:D('root','755',{user:D('user','755',{'readme.txt':F('user','644','Lacuna OSへようこそ。\n')})}),root:D('root','700',{'secret.txt':F('root','600','rootだけが読めるファイルです。\n')}),tmp:D('root','777')});}
+function seed(){return D('root','755',{etc:D('root','755',{hostname:F('root','644','lacuna\n'),motd:F('root','644','Lacuna OS 0.15\n')}),home:D('root','755',{user:D('user','755',{'readme.txt':F('user','644','Lacuna OSへようこそ。\n')})}),root:D('root','700',{'secret.txt':F('root','600','rootだけが読めるファイルです。\n')}),tmp:D('root','777')});}
 function kvClear(){return idb().then(function(db){return new Promise(function(res){var t=db.transaction('kv','readwrite');t.objectStore('kv').clear();t.oncomplete=function(){res();};t.onerror=function(){res();};});}).catch(function(){});}
 var ITER=600000,enc=new TextEncoder(),dec=new TextDecoder(),dk=null,dkRaw=null,meta=null;
 var metaReady=(async function(){meta=await kvGet('meta');})();
@@ -396,7 +477,7 @@ help:function(){return 'help pwd ls cd cat echo mkdir touch rm chmod\nwhoami id 
 pwd:function(a,X){return X.S.cwd;},
 echo:function(a){return a.join(' ');},
 date:function(){return new Date().toString();},
-uname:function(){return 'Lacuna OS 0.14 (browser)';},
+uname:function(){return 'Lacuna OS 0.15 (browser)';},
 whoami:function(a,X){return X.S.user;},
 id:function(a,X){return X.S.user==='root'?'uid=0(root) gid=0(root)':'uid=1000('+X.S.user+') gid=1000('+X.S.user+')';},
 open:function(a){if(APPS[a[0]]){openApp(a[0]);return a[0]+' を開きました';}return '使い方: open browser | term | notes | settings | about';},
@@ -445,7 +526,7 @@ h+='<p class="dim">'+(root?'rootは、他のユーザーのパスワードも変
 if(root)h+='<label class="r2"><span>対象</span><select id="tg"><option value="root">root</option><option value="user">user</option></select></label>';
 h+='<label class="pw" id="cw"><span>現在のパスワード</span><input type="password" id="cp" autocomplete="off"></label><label class="pw"><span>新しいパスワード(8文字以上)</span><input type="password" id="n1" autocomplete="new-password"></label><label class="pw"><span>もう一度</span><input type="password" id="n2" autocomplete="new-password"></label><button class="sb pri" data-a="pw" style="min-height:46px;border-radius:8px">変更する</button>';
 }else{
-h+=[['バージョン','Lacuna OS 0.14'],['ユーザー',session.user],['暗号化','AES-GCM / PBKDF2 60万回'],['自動ログアウト',uefi.idle?uefi.idle+'分(UEFIで変更)':'なし(UEFIで変更)'],['Secure Boot',uefi.sb?'ON':'OFF']].map(function(r){return '<div class="r2"><span>'+r[0]+'</span><b>'+r[1]+'</b></div>';}).join('');
+h+=[['バージョン','Lacuna OS 0.15'],['ユーザー',session.user],['暗号化','AES-GCM / PBKDF2 60万回'],['自動ログアウト',uefi.idle?uefi.idle+'分(UEFIで変更)':'なし(UEFIで変更)'],['Secure Boot',uefi.sb?'ON':'OFF']].map(function(r){return '<div class="r2"><span>'+r[0]+'</span><b>'+r[1]+'</b></div>';}).join('');
 if(session.user==='root')h+='<button class="sb" data-a="rs" style="min-height:46px">'+(armed?'もう一度押すと、すべて消します':'すべて初期化(rootのみ)')+'</button>';
 }
 b.innerHTML=h+'<p id="sm" role="status">'+msg+'</p></div>';
@@ -477,7 +558,7 @@ else if(el.id==='tg'){var cw=b.querySelector('#cw');if(cw)cw.hidden=(el.value!==
 });
 draw();
 }
-var proxyP=null,scram=null;
+var proxyP=null,scram=null,BRL=[];
 function loadScript(src){return new Promise(function(res,rej){var s=document.createElement('script');s.src=src;s.onload=res;s.onerror=function(){rej(new Error(src+' を読み込めませんでした'));};document.head.appendChild(s);});}
 async function sessionState(){try{var r=await fetch('/api/session',{credentials:'same-origin'});if(!r.ok||(r.headers.get('content-type')||'').indexOf('json')<0)return 'none';return (await r.json()).ok?'open':'locked';}catch(e){return 'none';}}
 async function healScramDb(){
@@ -490,9 +571,11 @@ if(has)return;
 await new Promise(function(res){var d=indexedDB.deleteDatabase('$scramjet');d.onsuccess=d.onerror=d.onblocked=function(){res();};setTimeout(res,3000);});
 }catch(e){}
 }
+function swPost(m){try{var c=navigator.serviceWorker.controller;if(c)c.postMessage(m);}catch(e){}}
 function initProxy(){
 if(proxyP)return proxyP;
 proxyP=(async function(){
+if(window.__LTEST){scram=window.__LTEST;return;}
 if(!('serviceWorker' in navigator))throw new Error('このブラウザは、Service Workerに対応していません');
 await loadScript('/baremux/index.js');await loadScript('/scram/scramjet.all.js');
 await navigator.serviceWorker.register('/sw.js',{scope:'/'});
@@ -503,26 +586,248 @@ scram=new C({files:{wasm:'/scram/scramjet.wasm.wasm',all:'/scram/scramjet.all.js
 await scram.init();
 var conn=new BareMux.BareMuxConnection('/baremux/worker.js');
 await conn.setTransport('/libcurl/index.mjs',[{websocket:(location.protocol==='https:'?'wss://':'ws://')+location.host+'/wisp/'}]);
+navigator.serviceWorker.addEventListener('message',function(e){BRL.slice().forEach(function(f){f(e.data);});});
 })();
 proxyP.catch(function(){proxyP=null;});
 return proxyP;
 }
 function toUrl(v){v=v.trim();if(!v)return '';var u=/^https?:\/\//i.test(v)?v:(/^[\w-]+(\.[\w-]+)+(:\d+)?([\/?#]\S*)?$/.test(v)?'https://'+v:'');return u||SEARCH[SE]+encodeURIComponent(v);}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function cfgRead(n,def){try{var f=find('~/.config/'+n+'.json',{user:session.user,cwd:'/',stack:[]});return Object.assign({},def,f&&f.t==='f'?JSON.parse(f.c):{});}catch(e){return Object.assign({},def);}}
+function cfgWrite(n,o){var S={user:session.user,cwd:'/',stack:[]},d=fs;norm('~/.config',S).forEach(function(x){if(!d.k[x])d.k[x]=D(S.user,'755');d=d.k[x];});wf('~/.config/'+n+'.json',JSON.stringify(o),false,S);}
 function mkBrowser(b){
 b.className+=' br';
-var ar='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">';
-b.innerHTML='<div class="bt"><button type="button" data-n="b" aria-label="戻る">'+ar+'<path d="M10 3L5 8l5 5"/></svg></button><button type="button" data-n="f" aria-label="進む">'+ar+'<path d="M6 3l5 5-5 5"/></svg></button><button type="button" data-n="r" aria-label="更新">'+ar+'<path d="M13 8a5 5 0 1 1-1.8-3.8M13 2.5V5h-2.5"/></svg></button><form class="bu"><input type="text" aria-label="URLまたは検索" placeholder="検索するか、URLを入力" autocomplete="off" autocapitalize="off" spellcheck="false"></form></div><div class="bm"><div class="bs" role="status"></div><iframe title="ブラウザ" hidden allow="fullscreen"></iframe></div>';
-var bs=b.querySelector('.bs'),fr=b.querySelector('iframe'),inp=b.querySelector('input'),frame=null;
+var BP=cfgRead('browser',{home:'lacuna://newtab',shields:true,dev:false,bm:[],hist:[]});
+var tabs=[],cur=null,ready=false,blocked=0,net=[],logs=[],tid=0,dtab='con',drawQ=false;
+function sv(p){return '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+p+'</svg>';}
+var IC={back:sv('<path d="M10 3L5 8l5 5"/>'),fwd:sv('<path d="M6 3l5 5-5 5"/>'),rel:sv('<path d="M13 8a5 5 0 1 1-1.8-3.8M13 2.5V5h-2.5"/>'),home:sv('<path d="M2.5 8L8 3l5.5 5M4 7v6h8V7"/>'),lock:sv('<rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/><path d="M5.5 7V5.5a2.5 2.5 0 0 1 5 0V7"/>'),info:sv('<circle cx="8" cy="8" r="5.5"/><path d="M8 7.5v3.2M8 5.4h.01"/>'),star:sv('<path d="M8 2.2l1.8 3.7 4 .6-2.9 2.8.7 4L8 11.4 4.4 13.3l.7-4L2.2 6.5l4-.6z"/>'),starf:'<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 2.2l1.8 3.7 4 .6-2.9 2.8.7 4L8 11.4 4.4 13.3l.7-4L2.2 6.5l4-.6z"/></svg>',shield:sv('<path d="M8 1.8l5 1.8v4c0 3-2.1 5.1-5 6.4-2.9-1.3-5-3.4-5-6.4v-4z"/>'),menu:sv('<path d="M2.5 4.5h11M2.5 8h11M2.5 11.5h11"/>'),plus:sv('<path d="M8 3v10M3 8h10"/>'),x:sv('<path d="M4 4l8 8M12 4l-8 8"/>'),globe:sv('<circle cx="8" cy="8" r="5.5"/><path d="M2.5 8h11M8 2.5c2 2 2 9 0 11M8 2.5c-2 2-2 9 0 11"/>')};
+function tb(n,l,s){return '<button type="button" data-n="'+n+'" aria-label="'+l+'" title="'+l+'">'+s+'</button>';}
+b.innerHTML='<div class="tabs2" role="tablist"></div><div class="bt">'+tb('b','戻る',IC.back)+tb('f','進む',IC.fwd)+tb('r','再読み込み',IC.rel)+tb('h','ホーム',IC.home)+'<form class="bu"><span class="si"></span><input type="text" aria-label="URLまたは検索" placeholder="検索するか、URLを入力" autocomplete="off" autocapitalize="off" spellcheck="false"><button type="button" data-n="star" aria-label="ブックマーク" title="ブックマーク"></button><button type="button" class="sh" data-n="shield" aria-label="シールド" title="シールド">'+IC.shield+'<i class="bd2" hidden>0</i></button></form>'+tb('m','メニュー',IC.menu)+'</div><div class="bm"><div class="pg"></div></div><div class="dv" hidden></div><div class="pop mn" hidden></div><div class="pop spop" hidden></div>';
+function q(s){return b.querySelector(s);}
+var tabsEl=q('.tabs2'),inp=q('.bu input'),bm=q('.bm'),pg=q('.pg'),dv=q('.dv'),mn=q('.mn'),sp=q('.spop'),si=q('.si'),bdg=q('.bd2'),starB=q('[data-n=star]');
+function save(){try{cfgWrite('browser',BP);}catch(e){}}
+function mk(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!==undefined)e.textContent=txt;return e;}
 function msg(t,btns){
-bs.hidden=false;fr.hidden=true;bs.textContent='';
-var p=document.createElement('p');p.textContent=t;bs.appendChild(p);
-(btns||[]).forEach(function(x){var q=document.createElement('button');q.type='button';q.className='sb';q.textContent=x[0];q.addEventListener('click',x[1]);bs.appendChild(q);});
+tabs.forEach(function(x){x.iframe.hidden=true;});pg.hidden=false;pg.textContent='';
+var w=mk('div','bs');w.setAttribute('role','status');w.appendChild(mk('p','',t));
+(btns||[]).forEach(function(x){var k=mk('button','sb',x[0]);k.type='button';k.addEventListener('click',x[1]);w.appendChild(k);});
+pg.appendChild(w);
 }
-function go(v){var u=toUrl(v);if(!u||!frame)return;bs.hidden=true;fr.hidden=false;inp.value=u;frame.go(u);}
+/* ---- ナビゲーション ---- */
+var INT={newtab:'新しいタブ',settings:'設定',history:'履歴',bookmarks:'ブックマーク'};
+function nav(t,v,push){
+v=(v||'').trim();
+var m=/^lacuna:\/\/(newtab|settings|history|bookmarks)$/.exec(v);
+if(m){t.int=m[1];t.title=INT[m[1]];}
+else{
+var u=toUrl(v);if(!u)return;
+t.int=null;t.url=u;t.title=u.replace(/^https?:\/\//,'');t.pend=true;
+if(push!==false){t.stack.splice(t.i+1);t.stack.push(u);t.i=t.stack.length-1;}
+t.frame.go(u);
+}
+if(t===cur)refresh();else tabbar();
+}
+function onUrl(t,u){
+try{if(u.indexOf(location.origin)===0)u=scram.decodeUrl(u);}catch(x){}
+if(t.pend){t.pend=false;t.stack[t.i]=u;}
+else if(u!==t.stack[t.i]){t.stack.splice(t.i+1);t.stack.push(u);t.i=t.stack.length-1;}
+t.url=u;if(t===cur&&!t.int)refresh();
+}
+function onLoad(t){
+try{var d=t.iframe.contentDocument;if(d&&d.title)t.title=d.title;}catch(e){}
+if(t.url&&!t.int&&!(BP.hist[0]&&BP.hist[0].u===t.url)){BP.hist.unshift({t:t.title,u:t.url,at:Date.now()});if(BP.hist.length>200)BP.hist.length=200;save();}
+tabbar();if(t===cur)dirty();
+}
+function newTab(u){
+if(!ready||tabs.length>=8)return;
+var t={id:++tid,url:'',title:'新しいタブ',int:null,stack:[],i:-1,pend:false};
+t.iframe=mk('iframe');t.iframe.title='ページ';t.iframe.hidden=true;t.iframe.setAttribute('allow','fullscreen');
+bm.appendChild(t.iframe);
+t.frame=scram.createFrame(t.iframe);
+t.frame.addEventListener('urlchange',function(e){onUrl(t,e.url);});
+t.frame.addEventListener('contextInit',function(e){hook(t,e.window);});
+t.iframe.addEventListener('load',function(){onLoad(t);});
+tabs.push(t);cur=t;nav(t,u||BP.home);
+}
+function pick(t){cur=t;refresh();}
+function closeTab(t){
+var i=tabs.indexOf(t);tabs.splice(i,1);t.iframe.remove();
+if(!tabs.length){newTab('lacuna://newtab');return;}
+if(cur===t)cur=tabs[Math.min(i,tabs.length-1)];
+refresh();
+}
+function goBack(){
+if(!cur||!ready)return;
+if(cur.int){if(cur.stack.length){cur.int=null;refresh();}return;}
+if(cur.i>0){cur.i--;nav(cur,cur.stack[cur.i],false);}
+}
+function goFwd(){
+if(!cur||!ready)return;
+if(cur.int){if(cur.stack.length){cur.int=null;refresh();}return;}
+if(cur.i<cur.stack.length-1){cur.i++;nav(cur,cur.stack[cur.i],false);}
+}
+function reload(){if(!cur||!ready)return;if(cur.int){refresh();return;}if(cur.stack[cur.i])nav(cur,cur.stack[cur.i],false);}
+/* ---- 表示 ---- */
+function tabbar(){
+tabsEl.textContent='';
+tabs.forEach(function(t){
+var d=mk('div','tab'+(t===cur?' on':''));d.setAttribute('role','tab');d.setAttribute('aria-selected',String(t===cur));
+d.innerHTML='<span class="fv">'+IC.globe+'</span><span class="tn"></span><button type="button" aria-label="タブを閉じる">'+IC.x+'</button>';
+d.querySelector('.tn').textContent=t.title;
+d.addEventListener('click',function(e){if(e.target.closest('button'))closeTab(t);else pick(t);});
+tabsEl.appendChild(d);
+});
+var p=mk('button','nt');p.type='button';p.setAttribute('aria-label','新しいタブ');p.innerHTML=IC.plus;p.addEventListener('click',function(){newTab('lacuna://newtab');});
+tabsEl.appendChild(p);
+}
+function refresh(){
+tabbar();
+if(!cur)return;
+tabs.forEach(function(t){t.iframe.hidden=!(t===cur&&!t.int);});
+pg.hidden=!cur.int;
+if(cur.int)page(cur.int);
+if(document.activeElement!==inp)inp.value=cur.int?'lacuna://'+cur.int:cur.url;
+si.innerHTML=(cur.int||/^https:/.test(cur.url))?IC.lock:IC.info;
+var bk=BP.bm.some(function(x){return x.u===cur.url;});
+starB.innerHTML=bk?IC.starf:IC.star;starB.style.color=bk?'var(--acc)':'';
+q('[data-n=b]').disabled=cur.int?!cur.stack.length:cur.i<=0;
+q('[data-n=f]').disabled=cur.int?!cur.stack.length:cur.i>=cur.stack.length-1;
+dirty();
+}
+/* ---- 内部ページ ---- */
+function ago(at){var s=Math.round((Date.now()-at)/1000);return s<60?s+'秒前':s<3600?Math.round(s/60)+'分前':s<86400?Math.round(s/3600)+'時間前':Math.round(s/86400)+'日前';}
+function page(name){
+pg.textContent='';
+var w=mk('div','ip');pg.appendChild(w);
+if(name==='newtab'){
+w.innerHTML='<h2>Lacuna ブラウザ</h2><form class="nts"><input type="text" aria-label="検索" placeholder="検索、またはURLを入力" autocomplete="off" autocapitalize="off" spellcheck="false"></form><div class="tiles"></div>';
+var tl=w.querySelector('.tiles'),def=[['DuckDuckGo(軽量版)','https://html.duckduckgo.com/html/'],['Bing','https://www.bing.com/'],['Brave','https://search.brave.com/'],['Wikipedia','https://ja.wikipedia.org/']];
+(BP.bm.length?BP.bm.slice(0,8).map(function(x){return [x.t,x.u];}):def).forEach(function(x){var k=mk('button','tile');k.type='button';k.setAttribute('data-go',x[1]);k.appendChild(mk('b','',(x[0]||x[1]).charAt(0).toUpperCase()));k.appendChild(mk('span','',x[0]||x[1]));tl.appendChild(k);});
+w.querySelector('.nts').addEventListener('submit',function(e){e.preventDefault();nav(cur,w.querySelector('input').value);});
+}else if(name==='settings'){
+var p=loadPrefs();
+w.innerHTML='<h2>設定</h2><div class="set"><label>検索エンジン<select id="bse"><option value="ddg">DuckDuckGo(軽量版)</option><option value="bing">Bing</option><option value="brave">Brave</option><option value="google">Google</option></select></label><label>ホームページ<input id="bhp" type="text" autocomplete="off" spellcheck="false"></label><label class="sw2">シールド(広告・トラッカーをブロック)<input id="bsh" type="checkbox"></label><label class="sw2">開発者ツールを開いたままにする<input id="bdv" type="checkbox"></label><div class="row2"><button type="button" class="sb" data-a="chist">履歴を消す</button><button type="button" class="sb" data-a="cbm">ブックマークを消す</button></div><h3>プロキシの情報</h3><p class="dim2">エンジン: Scramjet 1.1.0 / 通信: libcurl + Wisp(WebSocket)<br>Service Worker: <span id="bsw"></span></p></div>';
+w.querySelector('#bse').value=SEARCH[p.se]?p.se:'ddg';
+w.querySelector('#bhp').value=BP.home;w.querySelector('#bsh').checked=!!BP.shields;w.querySelector('#bdv').checked=!!BP.dev;
+w.querySelector('#bsw').textContent=(navigator.serviceWorker&&navigator.serviceWorker.controller)?'有効':'まだ有効になっていません(再読み込みしてください)';
+w.addEventListener('change',function(e){
+var el=e.target;
+if(el.id==='bse'){var pp=loadPrefs();pp.se=el.value;savePrefs(pp);SE=el.value;}
+else if(el.id==='bhp'){BP.home=el.value.trim()||'lacuna://newtab';save();}
+else if(el.id==='bsh'){BP.shields=el.checked;save();swPost({type:'shields',on:BP.shields});}
+else if(el.id==='bdv'){BP.dev=el.checked;save();}
+});
+}else if(name==='history'){
+w.innerHTML='<h2>履歴</h2><div class="row2"><input id="hq" type="text" placeholder="履歴を検索" aria-label="履歴を検索" autocomplete="off"><button type="button" class="sb" data-a="chist">すべて消す</button></div><div class="lst"></div>';
+var hl=w.querySelector('.lst');
+function hd(){hl.textContent='';var f=w.querySelector('#hq').value.toLowerCase();var n=0;BP.hist.forEach(function(x){if(f&&(x.t+x.u).toLowerCase().indexOf(f)<0)return;n++;var k=mk('button','li');k.type='button';k.setAttribute('data-go',x.u);k.appendChild(mk('b','',x.t||x.u));k.appendChild(mk('span','',x.u));k.appendChild(mk('i','',ago(x.at)));hl.appendChild(k);});if(!n)hl.appendChild(mk('p','dim2','履歴はありません'));}
+hd();w.querySelector('#hq').addEventListener('input',hd);
+}else if(name==='bookmarks'){
+w.innerHTML='<h2>ブックマーク</h2><div class="lst"></div>';
+var bl=w.querySelector('.lst');
+BP.bm.forEach(function(x,i){var r=mk('div','li2');var k=mk('button','li');k.type='button';k.setAttribute('data-go',x.u);k.appendChild(mk('b','',x.t||x.u));k.appendChild(mk('span','',x.u));var d=mk('button','sb','削除');d.type='button';d.setAttribute('data-del',i);r.appendChild(k);r.appendChild(d);bl.appendChild(r);});
+if(!BP.bm.length)bl.appendChild(mk('p','dim2','ブックマークはありません。アドレス欄の星で追加できます。'));
+}
+w.addEventListener('click',function(e){
+var t=e.target.closest('button');if(!t)return;
+var g=t.getAttribute('data-go'),a=t.getAttribute('data-a'),dl=t.getAttribute('data-del');
+if(g){nav(cur,g);return;}
+if(a==='chist'){BP.hist=[];save();page(name);}
+else if(a==='cbm'){BP.bm=[];save();refresh();}
+else if(dl!==null){BP.bm.splice(+dl,1);save();refresh();}
+});
+}
+/* ---- 開発者ツール ---- */
+function fmt(x){if(typeof x==='string')return x;var s;try{s=JSON.stringify(x);}catch(e){}return s===undefined?String(x):s;}
+function clog(k,t){logs.push({k:k,t:t});if(logs.length>300)logs.shift();dirty();}
+function hook(t,w){
+try{
+if(!w||w.__lh)return;w.__lh=1;
+['log','info','warn','error','debug'].forEach(function(k){var o=w.console[k];w.console[k]=function(){clog(k,[].slice.call(arguments).map(fmt).join(' '));return o.apply(w.console,arguments);};});
+w.addEventListener('error',function(e){clog('error',e.message+(e.filename?' ('+e.filename+':'+e.lineno+')':''));});
+w.addEventListener('unhandledrejection',function(e){clog('error','Unhandled: '+(e.reason&&e.reason.message||e.reason));});
+}catch(x){}
+}
+function dirty(){if(dv.hidden||drawQ)return;drawQ=true;requestAnimationFrame(function(){drawQ=false;devDraw();});}
+function devOpen(on){
+dv.hidden=!on;
+if(on&&!dv.firstChild){
+dv.innerHTML='<div class="dvh" role="tablist"><button type="button" data-d="con">コンソール</button><button type="button" data-d="net">ネットワーク</button><button type="button" data-d="el">要素</button><span></span><button type="button" data-d="x" aria-label="閉じる">'+IC.x+'</button></div><div class="dvb"></div><form class="dvi"><span>&gt;</span><input type="text" aria-label="JavaScriptを実行" autocomplete="off" autocapitalize="off" spellcheck="false"></form>';
+dv.addEventListener('click',function(e){var k=e.target.closest('button');if(!k)return;var d=k.getAttribute('data-d');if(d==='x')devOpen(false);else if(d){dtab=d;devDraw();}});
+dv.querySelector('.dvi').addEventListener('submit',function(e){
+e.preventDefault();var i=dv.querySelector('.dvi input'),c=i.value;i.value='';if(!c.trim())return;
+clog('in','> '+c);
+try{var w=cur.iframe.contentWindow;clog('out',fmt(w.eval(c)));}catch(x){clog('error',String(x&&x.message||x));}
+});
+}
+if(on)devDraw();
+}
+function devDraw(){
+if(dv.hidden)return;
+dv.querySelectorAll('.dvh button[data-d]').forEach(function(k){var d=k.getAttribute('data-d');if(d!=='x'){k.className=d===dtab?'on':'';k.setAttribute('aria-selected',String(d===dtab));}});
+dv.querySelector('.dvi').hidden=dtab!=='con';
+var body=dv.querySelector('.dvb');body.textContent='';
+if(dtab==='con'){
+if(!logs.length)body.appendChild(mk('p','dim2','ページのconsole.logとエラーがここに出ます。下の欄でJavaScriptも実行できます。'));
+logs.forEach(function(l){body.appendChild(mk('div','k-'+l.k,l.t));});
+}else if(dtab==='net'){
+if(!net.length)body.appendChild(mk('p','dim2','ページの通信がここに出ます。'));
+net.forEach(function(n){var r=mk('div','nr'+(n.status==='BLOCK'?' bl':n.status>=400?' er':''));r.appendChild(mk('b','',String(n.status)));r.appendChild(mk('span','',(n.method||'GET')+' '+(n.ms||0)+'ms'));r.appendChild(mk('span','u',n.url));if(n.error)r.title=n.error;body.appendChild(r);});
+}else{
+var pre=mk('pre');
+try{var d=cur.iframe.contentDocument;pre.textContent=d?d.documentElement.outerHTML.slice(0,150000):'(ページがありません)';}catch(x){pre.textContent='読み込めません: '+x.message;}
+var rb=mk('button','sb','更新');rb.type='button';rb.addEventListener('click',devDraw);
+body.appendChild(rb);body.appendChild(pre);
+}
+body.scrollTop=body.scrollHeight;
+}
+/* ---- ポップアップ ---- */
+function hidePop(){mn.hidden=true;sp.hidden=true;}
+function showMenu(){
+var was=!mn.hidden;hidePop();if(was)return;
+mn.innerHTML='<button type="button" data-m="nt">新しいタブ</button><button type="button" data-m="history">履歴</button><button type="button" data-m="bookmarks">ブックマーク</button><button type="button" data-m="dev">開発者ツール<span>F12</span></button><button type="button" data-m="settings">設定</button>';
+mn.hidden=false;
+}
+function showShield(){
+var was=!sp.hidden;hidePop();if(was)return;
+sp.innerHTML='<b>シールド</b><label class="sw2">広告・トラッカーをブロック<input type="checkbox"'+(BP.shields?' checked':'')+'></label><p class="dim2">ブロックした通信: '+blocked+' 件<br>既知の広告・計測のドメインへの通信を止めます。</p>';
+sp.querySelector('input').addEventListener('change',function(e){BP.shields=e.target.checked;save();swPost({type:'shields',on:BP.shields});});
+sp.hidden=false;
+}
+mn.addEventListener('click',function(e){
+var k=e.target.closest('button');if(!k)return;var m=k.getAttribute('data-m');hidePop();
+if(m==='nt')newTab('lacuna://newtab');else if(m==='dev')devOpen(dv.hidden);else if(cur)nav(cur,'lacuna://'+m);
+});
+q('.bt').addEventListener('click',function(e){
+var k=e.target.closest('button');if(!k||k.disabled)return;
+var n=k.getAttribute('data-n');
+if(n!=='m'&&n!=='shield')hidePop();
+if(n==='b')goBack();else if(n==='f')goFwd();else if(n==='r')reload();
+else if(n==='h'){if(cur&&ready)nav(cur,BP.home);}
+else if(n==='m')showMenu();else if(n==='shield')showShield();
+else if(n==='star'&&cur&&cur.url&&!cur.int){
+var i=BP.bm.findIndex(function(x){return x.u===cur.url;});
+if(i>=0)BP.bm.splice(i,1);else BP.bm.unshift({t:cur.title,u:cur.url});
+save();refresh();
+}
+});
+q('.bu').addEventListener('submit',function(e){e.preventDefault();if(cur&&ready)nav(cur,inp.value);inp.blur();});
+b.addEventListener('keydown',function(e){
+if(e.key==='F12'){e.preventDefault();devOpen(dv.hidden);}
+else if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='l'){e.preventDefault();inp.focus();inp.select();}
+});
+b.addEventListener('pointerdown',function(e){if(!e.target.closest('.pop,[data-n=m],[data-n=shield]'))hidePop();});
+BRL.push(function onMsg(d){
+if(!b.isConnected){BRL.splice(BRL.indexOf(onMsg),1);return;}
+if(!d)return;
+if(d.type==='net'){net.push(d);if(net.length>300)net.shift();dirty();}
+else if(d.type==='blocked'){blocked++;bdg.textContent=String(blocked);bdg.hidden=false;net.push({url:d.url,status:'BLOCK',ms:0,method:'GET'});if(net.length>300)net.shift();dirty();}
+});
+/* ---- 起動 ---- */
 function unlock(){
-bs.hidden=false;fr.hidden=true;
-bs.innerHTML='<p>合言葉を入力してください</p><form class="ul"><input type="password" aria-label="合言葉" autocomplete="off"><button type="submit" class="sb pri">解除</button></form><p class="er" role="alert"></p>';
-var f=bs.querySelector('form'),pw=f.querySelector('input'),er=bs.querySelector('.er');
+tabs.forEach(function(x){x.iframe.hidden=true;});pg.hidden=false;
+pg.innerHTML='<div class="bs"><p>合言葉を入力してください</p><form class="ul"><input type="password" aria-label="合言葉" autocomplete="off"><button type="submit" class="sb pri">解除</button></form><p class="er" role="alert"></p></div>';
+var f=pg.querySelector('form'),pw=f.querySelector('input'),er=pg.querySelector('.er');
 f.addEventListener('submit',async function(e){
 e.preventDefault();er.textContent='確認中...';
 try{
@@ -539,22 +844,15 @@ var st=await sessionState();
 if(st==='none'){msg('このページでは、ブラウザを使えません。ブラウザは、Renderなどに載せたサーバー版のLacuna OSで動きます。');return;}
 if(st==='locked'){unlock();return;}
 await initProxy();
-frame=scram.createFrame(fr);
-frame.addEventListener('urlchange',function(e){var u=e.url;try{if(u.indexOf(location.origin)===0)u=scram.decodeUrl(u);}catch(x){}inp.value=u;});
-msg('検索、またはURLを入力してください。',[['DuckDuckGo(軽量版)',function(){go('https://html.duckduckgo.com/html/');}],['Bing',function(){go('https://www.bing.com/');}],['Brave',function(){go('https://search.brave.com/');}],['Wikipedia(日本語)',function(){go('https://ja.wikipedia.org/');}]]);
+ready=true;swPost({type:'shields',on:BP.shields});
+newTab(BP.home);if(BP.dev)devOpen(true);
 }catch(e){msg('起動に失敗しました: '+e.message,[['もう一度試す',start]]);}
 }
-b.querySelector('.bu').addEventListener('submit',function(e){e.preventDefault();go(inp.value);});
-b.querySelector('.bt').addEventListener('click',function(e){
-var t=e.target.closest('button');if(!t||!frame)return;
-var n=t.getAttribute('data-n');
-if(n==='b')frame.back();else if(n==='f')frame.forward();else frame.reload();
-});
-start();
+tabbar();start();
 }
 function mkAbout(b){
 b.className+=' ab';
-b.innerHTML='<h1>Lacuna OS 0.14</h1><p>ブラウザの中で動くデスクトップです。ウィンドウは、移動、リサイズ、最小化、最大化、閉じるができます。</p><p>ターミナルから、ファイルとユーザー(root)を試せます。パスワードで保存データを暗号化しています。ブラウザアプリを追加しました(サーバー版のみ動きます)。次に作るもの: ブラウザアプリ。</p>';
+b.innerHTML='<h1>Lacuna OS 0.15</h1><p>ブラウザの中で動くデスクトップです。ウィンドウは、移動、リサイズ、最小化、最大化、閉じるができます。</p><p>ターミナルから、ファイルとユーザー(root)を試せます。パスワードで保存データを暗号化しています。ブラウザアプリを追加しました(サーバー版のみ動きます)。次に作るもの: ブラウザアプリ。</p>';
 }
 function mkNotes(b){
 var t=document.createElement('textarea');
@@ -575,7 +873,7 @@ function prompt(){hdr.textContent='┌──('+S.user+'㉿'+HN+')-['+short(S)+']
 function print(t,c){var d=document.createElement('div');d.textContent=t;if(c)d.className=c;out.appendChild(d);b.scrollTop=b.scrollHeight;}
 function ask(q){return new Promise(function(res){pend=res;inp.type='password';ps.textContent=q;hdr.hidden=true;inp.focus();});}
 var X={S:S,ask:ask};
-print('Lacuna OS 0.14 -- help でコマンド一覧','dim');
+print('Lacuna OS 0.15 -- help でコマンド一覧','dim');
 prompt();
 async function exec(v){
 var t=v.match(/"[^"]*"|'[^']*'|\S+/g).map(function(x){return /^["']/.test(x)?x.slice(1,-1):x;});
