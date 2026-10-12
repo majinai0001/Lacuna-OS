@@ -57,3 +57,8 @@ ACCESS_PASSPHRASE=好きな合言葉 node server.js
 ## 部品の組み合わせ(重要)
 - `bare-mux 2.1.9` には、`libcurl-transport 1.5.2` を組み合わせます。`libcurl-transport 2.x` は、ヘッダーの渡し方が違い、`headers is not iterable` というエラーになります。
 - `epoxy-transport` は使っていないので、外しました。
+
+## ブラウザアプリの機能
+- タブ(最大8)、戻る・進む・更新、ホーム、ブックマーク(星)、履歴、設定ページ(`lacuna://settings`)。履歴・ブックマーク・設定は、ユーザーごとに暗号化して `~/.config/browser.json` に保存されます。
+- シールド: 既知の広告・トラッカーのドメインへの通信を、`public/sw.js` で止めます(一覧は `BLOCK`)。
+- 開発者ツール(F12、またはメニュー): コンソール(ページのconsole.log、エラー、JavaScriptの実行)、ネットワーク(プロキシ経由の通信と状態コード)、要素(HTML)。
