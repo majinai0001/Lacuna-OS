@@ -9,13 +9,13 @@
   "scripts": {
     "start": "node server.js"
   },
-  "dependencies": {
+    "dependencies": {
     "@fontsource/jetbrains-mono": "^5.3.0",
     "@fontsource/zen-maru-gothic": "^5.3.1",
     "@mercuryworkshop/bare-mux": "latest",
     "@mercuryworkshop/epoxy-transport": "latest",
     "@mercuryworkshop/libcurl-transport": "latest",
-    "@mercuryworkshop/scramjet": "latest",
+    "@mercuryworkshop/scramjet": "2.0.67-alpha.2", 
     "@mercuryworkshop/wisp-js": "^0.3.3",
     "express": "^4.21.2"
   }
