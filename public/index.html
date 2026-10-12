@@ -400,7 +400,46 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 .mn button:hover{background:var(--ctl)}
 .mn span{color:var(--mute);font-size:12px}
 .spop{right:48px;top:80px;width:260px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.fm{display:flex;flex-direction:column;container-type:inline-size;position:relative}
+.fb{display:flex;align-items:center;gap:4px;padding:6px 8px;flex:none}
+.fb>button,.fc button{min-width:36px;height:36px;display:flex;align-items:center;justify-content:center;gap:6px;padding:0 8px;border:0;border-radius:4px;background:none;color:var(--text);font:inherit;font-size:12px;cursor:pointer;white-space:nowrap}
+.fb>button:hover,.fc button:hover{background:var(--ctl)}
+.fb button:disabled,.fc button:disabled{opacity:.35;cursor:default}
+.fb svg,.fc svg{width:16px;height:16px;flex:none}
+.fadr,.fsr{height:34px;border:1px solid var(--cb);border-radius:4px;background:var(--ctl);color:var(--text);font:inherit;font-size:13px;padding:0 10px;min-width:0;box-shadow:inset 0 -1px 0 var(--cb)}
+.fadr{flex:1}
+.fsr{width:150px}
+.fadr:focus,.fsr:focus{outline:none;box-shadow:inset 0 -2px 0 var(--acc)}
+.fc{display:flex;gap:2px;padding:2px 8px 6px;border-bottom:1px solid var(--line);overflow-x:auto;flex:none}
+.fbody{flex:1;display:flex;min-height:0}
+.fnav{width:140px;flex:none;display:flex;flex-direction:column;gap:2px;padding:8px 6px;border-right:1px solid var(--line);overflow:auto}
+.fnav button{position:relative;min-height:36px;padding:0 12px;border:0;border-radius:4px;background:none;color:var(--text);font:inherit;font-size:13px;text-align:left;cursor:pointer}
+.fnav button:hover,.fnav button.on{background:var(--ctl)}
+.fnav button.on::before{content:"";position:absolute;left:0;top:9px;bottom:9px;width:3px;border-radius:2px;background:var(--acc)}
+.fl{flex:1;min-width:0;overflow:auto;outline:0}
+.fh,.fr{display:grid;grid-template-columns:minmax(0,1fr) 130px 80px;align-items:center;gap:8px;padding:0 12px}
+.fh{height:30px;position:sticky;top:0;background:var(--win);color:var(--mute);font-size:12px;border-bottom:1px solid var(--line)}
+.fr{min-height:38px;cursor:default;font-size:13px;border-radius:4px;margin:0 4px}
+.fr:hover{background:var(--ctl)}
+.fr.on{background:var(--tint)}
+.fr .nm{display:flex;align-items:center;gap:8px;min-width:0}
+.fr .nm svg{width:20px;height:20px;flex:none}
+.fr .nm span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fr .ty,.fr .sz,.fh .ty,.fh .sz{color:var(--mute);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fr .sz,.fh .sz{text-align:right}
+.rn{flex:1;min-width:0;height:28px;border:1px solid var(--acc);border-radius:4px;background:var(--win);color:var(--text);font:inherit;padding:0 6px}
+.fs{flex:none;height:30px;display:flex;align-items:center;padding:0 12px;border-top:1px solid var(--line);color:var(--mute);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fp{left:50%;top:50%;transform:translate(-50%,-50%);width:min(90%,340px);display:flex;flex-direction:column;gap:8px;padding:16px;z-index:8}
+.pr2{display:flex;justify-content:space-between;gap:12px;font-size:13px}
+.pr2 span:first-child{color:var(--mute)}
+.pr2 input{width:60px;height:30px;border:1px solid var(--cb);border-radius:4px;background:var(--ctl);color:var(--text);font:inherit;text-align:center}
+@container (max-width:520px){.fnav{display:none}.fh .ty,.fr .ty{display:none}.fh,.fr{grid-template-columns:minmax(0,1fr) 80px}.fc button span{display:none}.fsr{width:90px}}
+.ed{display:flex;flex-direction:column}
+.edb{display:flex;align-items:center;gap:10px;padding:6px 8px;border-bottom:1px solid var(--line);flex:none}
+.eds{color:var(--mute);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.edt{flex:1;min-height:0;width:100%;box-sizing:border-box;padding:12px;border:0;outline:0;resize:none;background:transparent;color:var(--text);font:13px/1.7 "JetBrains Mono","Zen Maru Gothic",monospace}
 </style>
+
 
 </head>
 <body>
@@ -424,7 +463,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 (function(){
 var PH=0,BH=48,z=10,cur=null,wins=[],session={user:'user',mode:'normal'};
 var desk=document.getElementById('desk'),tasks=document.getElementById('tasks'),menu=document.getElementById('menu'),mb=document.getElementById('mb');
-var ICONS={browser:'assets/icons/browser.svg',term:'assets/icons/term.svg',notes:'assets/icons/notes.svg',settings:'assets/icons/settings.svg',about:'assets/icons/about.svg'};
+var ICONS={files:'assets/icons/files.svg',editor:'assets/icons/notes.svg',browser:'assets/icons/browser.svg',term:'assets/icons/term.svg',notes:'assets/icons/notes.svg',settings:'assets/icons/settings.svg',about:'assets/icons/about.svg'};
 function ICON(id,c){return '<img class="'+(c||'ico')+'" src="'+ICONS[id]+'" alt="" draggable="false">';}
 var I={};Object.keys(ICONS).forEach(function(k){I[k]=ICON(k);});
 var S='<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true">';
@@ -432,6 +471,8 @@ var SMIN=S+'<path d="M2 9h8"/></svg>',SMAX=S+'<rect x="2" y="2" width="8" height
 
 var APPS={
 browser:{t:'ブラウザ',w:760,h:520,mk:mkBrowser},
+files:{t:'ファイル',w:700,h:460,mk:mkFiles},
+editor:{t:'エディター',w:520,h:400,mk:mkEditor,hid:1},
 term:{t:'ターミナル',w:560,h:340,mk:mkTerm},
 notes:{t:'メモ',w:420,h:300,mk:mkNotes},
 settings:{t:'設定',w:440,h:460,mk:mkSettings},
@@ -443,7 +484,7 @@ function kvGet(k){return idb().then(function(db){return new Promise(function(res
 function kvSet(k,v){return idb().then(function(db){return new Promise(function(res){var t=db.transaction('kv','readwrite');t.objectStore('kv').put(v,k);t.oncomplete=function(){res();};t.onerror=function(){res();};});}).catch(function(){});}
 function D(o,m,k){return{t:'d',o:o,m:m,k:k||{}};}
 function F(o,m,c){return{t:'f',o:o,m:m,c:c};}
-function seed(){return D('root','755',{etc:D('root','755',{hostname:F('root','644','lacuna\n'),motd:F('root','644','Lacuna OS 0.15\n')}),home:D('root','755',{user:D('user','755',{'readme.txt':F('user','644','Lacuna OSへようこそ。\n')})}),root:D('root','700',{'secret.txt':F('root','600','rootだけが読めるファイルです。\n')}),tmp:D('root','777')});}
+function seed(){return D('root','755',{etc:D('root','755',{hostname:F('root','644','lacuna\n'),motd:F('root','644','Lacuna OS 0.16\n')}),home:D('root','755',{user:D('user','755',{'readme.txt':F('user','644','Lacuna OSへようこそ。\n')})}),root:D('root','700',{'secret.txt':F('root','600','rootだけが読めるファイルです。\n')}),tmp:D('root','777')});}
 function kvClear(){return idb().then(function(db){return new Promise(function(res){var t=db.transaction('kv','readwrite');t.objectStore('kv').clear();t.oncomplete=function(){res();};t.onerror=function(){res();};});}).catch(function(){});}
 var ITER=600000,enc=new TextEncoder(),dec=new TextDecoder(),dk=null,dkRaw=null,meta=null;
 var metaReady=(async function(){meta=await kvGet('meta');})();
@@ -477,10 +518,10 @@ help:function(){return 'help pwd ls cd cat echo mkdir touch rm chmod\nwhoami id 
 pwd:function(a,X){return X.S.cwd;},
 echo:function(a){return a.join(' ');},
 date:function(){return new Date().toString();},
-uname:function(){return 'Lacuna OS 0.15 (browser)';},
+uname:function(){return 'Lacuna OS 0.16 (browser)';},
 whoami:function(a,X){return X.S.user;},
 id:function(a,X){return X.S.user==='root'?'uid=0(root) gid=0(root)':'uid=1000('+X.S.user+') gid=1000('+X.S.user+')';},
-open:function(a){if(APPS[a[0]]){openApp(a[0]);return a[0]+' を開きました';}return '使い方: open browser | term | notes | settings | about';},
+open:function(a){if(APPS[a[0]]&&!APPS[a[0]].hid){openApp(a[0]);return a[0]+' を開きました';}return '使い方: open browser | files | term | notes | settings | about';},
 ls:function(a,X){var S=X.S,l=0,all=0,ps=[];a.forEach(function(x){if(x.charAt(0)==='-'){if(x.indexOf('l')>0)l=1;if(x.indexOf('a')>0)all=1;}else ps.push(x);});var p=ps[0]||'.',n=need(p,S),it;
 if(n.t==='d'){if(!can(n,S.user,'r'))throw new Error('許可がありません');it=Object.keys(n.k).sort().filter(function(k){return all||k.charAt(0)!=='.';}).map(function(k){return[k,n.k[k]];});}else it=[[p,n]];
 return it.map(function(i){var nm=i[0]+(i[1].t==='d'?'/':'');return l?perm(i[1])+' '+i[1].o+' '+nm:nm;}).join(l?'\n':'  ');},
@@ -526,7 +567,7 @@ h+='<p class="dim">'+(root?'rootは、他のユーザーのパスワードも変
 if(root)h+='<label class="r2"><span>対象</span><select id="tg"><option value="root">root</option><option value="user">user</option></select></label>';
 h+='<label class="pw" id="cw"><span>現在のパスワード</span><input type="password" id="cp" autocomplete="off"></label><label class="pw"><span>新しいパスワード(8文字以上)</span><input type="password" id="n1" autocomplete="new-password"></label><label class="pw"><span>もう一度</span><input type="password" id="n2" autocomplete="new-password"></label><button class="sb pri" data-a="pw" style="min-height:46px;border-radius:8px">変更する</button>';
 }else{
-h+=[['バージョン','Lacuna OS 0.15'],['ユーザー',session.user],['暗号化','AES-GCM / PBKDF2 60万回'],['自動ログアウト',uefi.idle?uefi.idle+'分(UEFIで変更)':'なし(UEFIで変更)'],['Secure Boot',uefi.sb?'ON':'OFF']].map(function(r){return '<div class="r2"><span>'+r[0]+'</span><b>'+r[1]+'</b></div>';}).join('');
+h+=[['バージョン','Lacuna OS 0.16'],['ユーザー',session.user],['暗号化','AES-GCM / PBKDF2 60万回'],['自動ログアウト',uefi.idle?uefi.idle+'分(UEFIで変更)':'なし(UEFIで変更)'],['Secure Boot',uefi.sb?'ON':'OFF']].map(function(r){return '<div class="r2"><span>'+r[0]+'</span><b>'+r[1]+'</b></div>';}).join('');
 if(session.user==='root')h+='<button class="sb" data-a="rs" style="min-height:46px">'+(armed?'もう一度押すと、すべて消します':'すべて初期化(rootのみ)')+'</button>';
 }
 b.innerHTML=h+'<p id="sm" role="status">'+msg+'</p></div>';
@@ -850,9 +891,195 @@ newTab(BP.home);if(BP.dev)devOpen(true);
 }
 tabbar();start();
 }
+var FCLIP=null;
+function ics(p){return '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+p+'</svg>';}
+var FI={dir:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 6a2 2 0 0 1 2-2h5l2 2.5h9a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2z" fill="#f5b942"/><path d="M2 10h20v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2z" fill="#fbd16b"/></svg>',file:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h8l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" fill="#cfd6e0"/><path d="M14 2l5 5h-4a1 1 0 0 1-1-1z" fill="#9aa5b5"/></svg>'};
+function fsize(n){var s=new TextEncoder().encode(n.c||'').length;return s<1024?s+' B':s<1048576?(s/1024).toFixed(1)+' KB':(s/1048576).toFixed(1)+' MB';}
+function ftype(name,n){if(n.t==='d')return 'フォルダー';var m=/\.([^.]+)$/.exec(name),e=m?m[1].toLowerCase():'',T={txt:'テキスト ドキュメント',md:'Markdown',json:'JSON',js:'JavaScript',html:'HTML',css:'CSS',svg:'SVG',png:'画像',jpg:'画像'};return T[e]||(e?e.toUpperCase()+' ファイル':'ファイル');}
+function uniq(d,base){var m=/^(.*?)(\.[^.]*)?$/.exec(base),n=base,i=2;while(d.k[n]){n=m[1]+' ('+i+')'+(m[2]||'');i++;}return n;}
+function cloneNode(n,u){var c=JSON.parse(JSON.stringify(n));(function w(x){x.o=u;if(x.k)Object.keys(x.k).forEach(function(k){w(x.k[k]);});})(c);return c;}
+function pjoin(a,b){return a==='/'?'/'+b:a+'/'+b;}
+function mkFiles(b){
+b.className+=' fm';
+var S={user:session.user,cwd:'/',stack:[]},H=home(session.user),path=H,hs=[H],hi=0,sel=[],q='',armed=false,ren=null,note='';
+try{var hd=find(H,S);if(hd&&hd.t==='d'&&can(hd,S.user,'w')){['Documents','Downloads'].forEach(function(n){if(!hd.k[n])hd.k[n]=D(S.user,'755');});save();}}catch(e){}
+var CM=[['newf','新規フォルダー',ics('<path d="M2 4.5a1 1 0 0 1 1-1h3l1.5 1.5H13a1 1 0 0 1 1 1V12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1zM8 7v3.5M6.3 8.8h3.4"/>')],['newt','新規テキスト',ics('<path d="M4 2h5l3 3v9H4zM8.5 2v3.5H12M8 8v3.5M6.3 9.8h3.4"/>')],['cut','切り取り',ics('<circle cx="4.5" cy="11.5" r="1.8"/><circle cx="11.5" cy="11.5" r="1.8"/><path d="M5.5 10L11 2.5M10.5 10L5 2.5"/>')],['copy','コピー',ics('<rect x="5.5" y="5.5" width="8" height="8" rx="1.2"/><path d="M10.5 3.5v-.3a1 1 0 0 0-1-1H3.7a1 1 0 0 0-1 1v5.8a1 1 0 0 0 1 1h.3"/>')],['paste','貼り付け',ics('<rect x="3" y="3" width="10" height="11" rx="1.2"/><path d="M6 3V2h4v1M6 7h4M6 10h4"/>')],['ren','名前の変更',ics('<path d="M2.5 13.5l.7-3L11 2.7a1.2 1.2 0 0 1 1.7 0l.6.6a1.2 1.2 0 0 1 0 1.7L5.5 12.8z"/>')],['del','削除',ics('<path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.6 8.5h5.8l.6-8.5M7 7v4M9 7v4"/>')],['prop','プロパティ',ics('<circle cx="8" cy="8" r="5.5"/><path d="M8 7.5v3.2M8 5.4h.01"/>')]];
+b.innerHTML='<div class="fb"><button type="button" data-c="back" aria-label="戻る">'+ics('<path d="M10 3L5 8l5 5"/>')+'</button><button type="button" data-c="fwd" aria-label="進む">'+ics('<path d="M6 3l5 5-5 5"/>')+'</button><button type="button" data-c="up" aria-label="上へ">'+ics('<path d="M8 13V3M3.5 7.5L8 3l4.5 4.5"/>')+'</button><input class="fadr" type="text" aria-label="パス" spellcheck="false" autocapitalize="off" autocomplete="off"><input class="fsr" type="search" placeholder="検索" aria-label="このフォルダー内を検索" autocomplete="off"></div><div class="fc">'+CM.map(function(c){return '<button type="button" data-c="'+c[0]+'" title="'+c[1]+'">'+c[2]+'<span>'+c[1]+'</span></button>';}).join('')+'</div><div class="fbody"><nav class="fnav" aria-label="クイックアクセス"></nav><div class="fl" tabindex="0"><div class="fh"><span>名前</span><span class="ty">種類</span><span class="sz">サイズ</span></div><div class="fr0" role="list"></div></div></div><div class="fs" role="status"></div><div class="pop fp" hidden></div>';
+function g(s){return b.querySelector(s);}
+var adr=g('.fadr'),srch=g('.fsr'),nav=g('.fnav'),list=g('.fr0'),fl=g('.fl'),stt=g('.fs'),fp=g('.fp');
+function mkb(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!==undefined)e.textContent=txt;return e;}
+function dirNode(){var d=find(path,S);return d&&d.t==='d'?d:null;}
+function status(m){note=m||'';draw(true);}
+function go(p,push){
+try{var d=find(p,S);if(!d||d.t!=='d'){note='フォルダーが見つかりません';draw(true);return;}
+if(!can(d,S.user,'r')||!can(d,S.user,'x')){note='アクセスが拒否されました';draw(true);return;}}catch(e){note=e.message;draw(true);return;}
+if(push!==false){hs.splice(hi+1);hs.push(p);hi=hs.length-1;}
+path=p;sel=[];q='';srch.value='';armed=false;ren=null;note='';draw();
+}
+function openItem(n){
+var d=dirNode();if(!d||!d.k[n])return;
+if(d.k[n].t==='d')go(pjoin(path,n));else openApp('editor',pjoin(path,n));
+}
+function draw(keep){
+adr.value=path;
+nav.textContent='';
+[['ホーム',H],['ドキュメント',pjoin(H,'Documents')],['ダウンロード',pjoin(H,'Downloads')],['ルート','/']].forEach(function(x){var k=mkb('button',x[1]===path?'on':'',x[0]);k.type='button';k.setAttribute('data-p',x[1]);nav.appendChild(k);});
+g('[data-c=back]').disabled=hi<=0;g('[data-c=fwd]').disabled=hi>=hs.length-1;g('[data-c=up]').disabled=path==='/';
+g('[data-c=paste]').disabled=!FCLIP;
+list.textContent='';
+var d=null;try{d=dirNode();}catch(e){}
+if(!d){stt.textContent=note||'フォルダーが見つかりません';return;}
+if(!can(d,S.user,'r')){stt.textContent='アクセスが拒否されました';return;}
+var names=Object.keys(d.k).filter(function(n){return !q||n.toLowerCase().indexOf(q)>=0;}).sort(function(a,c){var da=d.k[a].t==='d',dc=d.k[c].t==='d';return da!==dc?(da?-1:1):a.localeCompare(c,'ja');});
+names.forEach(function(n){
+var nd=d.k[n],r=mkb('div','fr'+(sel.indexOf(n)>=0?' on':''));r.setAttribute('role','listitem');r.setAttribute('data-n',n);r.setAttribute('aria-selected',String(sel.indexOf(n)>=0));
+var nm=mkb('span','nm');nm.innerHTML=nd.t==='d'?FI.dir:FI.file;
+if(ren===n){var i=mkb('input','rn');i.value=n;i.setAttribute('aria-label','新しい名前');nm.appendChild(i);}else nm.appendChild(mkb('span','',n));
+r.appendChild(nm);r.appendChild(mkb('span','ty',ftype(n,nd)));r.appendChild(mkb('span','sz',nd.t==='d'?'':fsize(nd)));
+list.appendChild(r);
+if(ren===n)setTimeout(function(){var e=list.querySelector('.rn');if(e){e.focus();e.select();}});
+});
+if(!names.length)list.appendChild(mkb('p','dim2',q?'一致する項目がありません':'このフォルダーは空です'));
+stt.textContent=note||summary(names.length);
+}
+function summary(n){return n+' 個の項目'+(sel.length?'    '+sel.length+' 個を選択':'')+(FCLIP?'    クリップボード: '+FCLIP.names.length+' 個('+(FCLIP.op==='cut'?'切り取り':'コピー')+')':'');}
+function updSel(){
+armed=false;note='';
+list.querySelectorAll('.fr').forEach(function(r){var on=sel.indexOf(r.getAttribute('data-n'))>=0;r.classList.toggle('on',on);r.setAttribute('aria-selected',String(on));});
+stt.textContent=summary(list.querySelectorAll('.fr').length);
+}
+function commitRename(i){
+var old=ren;if(!old)return;ren=null;
+var nn=i.value.trim();
+try{
+var d=dirNode();
+if(nn&&nn!==old){
+if(!/^[^\/]+$/.test(nn)||nn==='.'||nn==='..')throw new Error('その名前は使えません');
+if(d.k[nn])throw new Error('同じ名前の項目があります');
+if(!can(d,S.user,'w'))throw new Error('許可がありません');
+d.k[nn]=d.k[old];delete d.k[old];sel=[nn];save();note='';
+}
+}catch(e){note=e.message;}
+draw();
+}
+function cmd(c){
+try{
+var d=dirNode();
+if(c!=='del')armed=false;
+if(c==='back'){if(hi>0){hi--;go(hs[hi],false);}return;}
+if(c==='fwd'){if(hi<hs.length-1){hi++;go(hs[hi],false);}return;}
+if(c==='up'){if(path!=='/')go('/'+norm(path,S).slice(0,-1).join('/'));return;}
+if(!d)return;
+if(c==='newf'||c==='newt'){
+if(!can(d,S.user,'w'))throw new Error('許可がありません');
+var nn=uniq(d,c==='newf'?'新しいフォルダー':'新しいテキスト.txt');
+d.k[nn]=c==='newf'?D(S.user,'755'):F(S.user,'644','');save();sel=[nn];ren=nn;note='';draw();return;
+}
+if(c==='paste'){
+if(!FCLIP)return;
+if(!can(d,S.user,'w'))throw new Error('許可がありません');
+var sd=find(FCLIP.dir,S);
+FCLIP.names.forEach(function(n){
+var node=sd&&sd.k[n];if(!node)return;
+var full=pjoin(FCLIP.dir,n);
+if(node.t==='d'&&(path===full||path.indexOf(full+'/')===0))throw new Error('フォルダーを、自分の中には貼り付けられません');
+if(!can(node,S.user,'r'))throw new Error(n+': 許可がありません');
+if(FCLIP.op==='cut'){
+if(FCLIP.dir===path)return;
+if(!can(sd,S.user,'w'))throw new Error(n+': 移動元に書き込めません');
+var m=uniq(d,n);d.k[m]=node;delete sd.k[n];
+}else{d.k[uniq(d,n)]=cloneNode(node,S.user);}
+});
+if(FCLIP.op==='cut')FCLIP=null;
+save();note='';draw();return;
+}
+if(!sel.length&&c!=='prop'){note='項目を選んでください';draw();return;}
+if(c==='cut'||c==='copy'){FCLIP={op:c,dir:path,names:sel.slice()};note='';draw();return;}
+if(c==='ren'){ren=sel[0];draw();return;}
+if(c==='del'){
+if(!can(d,S.user,'w'))throw new Error('許可がありません');
+if(!armed){armed=true;note='もう一度「削除」を押すと、'+sel.length+' 個を完全に削除します';draw();return;}
+sel.forEach(function(n){delete d.k[n];});sel=[];armed=false;save();note='';draw();return;
+}
+if(c==='prop'){showProp();return;}
+}catch(e){note=e.message;draw();}
+}
+function showProp(){
+var d=dirNode(),name=sel[0],n=name?d.k[name]:d,lab=name||path;
+fp.textContent='';
+fp.appendChild(mkb('b','',lab));
+[['種類',ftype(name||'',n)],['場所',path],['サイズ',n.t==='d'?(Object.keys(n.k).length+' 個の項目'):fsize(n)],['所有者',n.o],['権限',perm(n)+' ('+n.m+')']].forEach(function(x){var r=mkb('div','pr2');r.appendChild(mkb('span','',x[0]));r.appendChild(mkb('span','',x[1]));fp.appendChild(r);});
+var ed=S.user==='root'||n.o===S.user;
+if(ed){
+var w=mkb('div','pr2');w.appendChild(mkb('span','','権限を変更(8進数)'));var i=mkb('input');i.value=n.m;i.maxLength=3;i.setAttribute('aria-label','権限');w.appendChild(i);fp.appendChild(w);
+var ap=mkb('button','sb','適用');ap.type='button';ap.addEventListener('click',function(){if(!/^[0-7]{3}$/.test(i.value)){note='3桁の8進数にしてください';fp.hidden=true;draw();return;}n.m=i.value;save();fp.hidden=true;note='権限を変更しました';draw();});fp.appendChild(ap);
+}
+var cl=mkb('button','sb','閉じる');cl.type='button';cl.addEventListener('click',function(){fp.hidden=true;});fp.appendChild(cl);
+fp.hidden=false;
+}
+b.addEventListener('click',function(e){
+var t=e.target.closest('button');
+if(t&&t.closest('.fp'))return;
+if(t){
+var c=t.getAttribute('data-c'),p=t.getAttribute('data-p');
+if(p){go(p);return;}
+if(c){fp.hidden=true;cmd(c);return;}
+}
+var r=e.target.closest('.fr');
+if(r&&!e.target.closest('.rn')){
+var n=r.getAttribute('data-n');
+if(e.ctrlKey||e.metaKey){var i=sel.indexOf(n);if(i>=0)sel.splice(i,1);else sel.push(n);updSel();return;}
+if(sel.length===1&&sel[0]===n){if(lastPT==='touch')openItem(n);return;}
+sel=[n];updSel();return;
+}
+if(!e.target.closest('.rn,.fadr,.fsr,.fp,.fh')&&e.target.closest('.fl')){sel=[];updSel();}
+});
+var lastPT='touch';
+b.addEventListener('pointerdown',function(e){lastPT=e.pointerType||'touch';},true);
+b.addEventListener('dblclick',function(e){var r=e.target.closest('.fr');if(r&&!e.target.closest('.rn'))openItem(r.getAttribute('data-n'));});
+b.addEventListener('keydown',function(e){
+if(e.target.classList.contains('rn')){
+if(e.key==='Enter'){e.preventDefault();commitRename(e.target);}
+else if(e.key==='Escape'){ren=null;draw();}
+return;
+}
+if(e.target===adr){if(e.key==='Enter'){e.preventDefault();go('/'+norm(adr.value.trim()||H,S).join('/'));}return;}
+if(e.target===srch)return;
+if(e.key==='Delete')cmd('del');
+else if(e.key==='F2'&&sel.length===1){e.preventDefault();cmd('ren');}
+else if(e.key==='Enter'&&sel.length===1)openItem(sel[0]);
+else if(e.key==='Backspace'){e.preventDefault();cmd('up');}
+else if((e.ctrlKey||e.metaKey)&&'cxv'.indexOf(e.key.toLowerCase())>=0&&e.key.length===1){e.preventDefault();cmd({c:'copy',x:'cut',v:'paste'}[e.key.toLowerCase()]);}
+});
+b.addEventListener('focusout',function(e){if(e.target.classList&&e.target.classList.contains('rn'))commitRename(e.target);});
+srch.addEventListener('input',function(){q=srch.value.trim().toLowerCase();sel=[];draw();});
+draw();
+}
+function mkEditor(b,arg,win){
+b.className+=' ed';
+var S={user:session.user,cwd:'/',stack:[]},path=arg||'',dirty=false;
+b.innerHTML='<div class="edb"><button type="button" class="sb" data-a="save">保存</button><span class="eds" role="status"></span></div><textarea class="edt" spellcheck="false" aria-label="テキスト"></textarea>';
+var ta=b.querySelector('.edt'),st=b.querySelector('.eds');
+function title(){if(win){var t=win.el.querySelector('.tt');if(t)t.textContent=(dirty?'● ':'')+(path?path.split('/').pop():'無題')+' - エディター';}}
+try{
+if(!path)throw new Error('ファイルが指定されていません');
+var n=find(path,S);
+if(!n||n.t!=='f')throw new Error('ファイルが見つかりません');
+if(!can(n,S.user,'r'))throw new Error('読み取りが許可されていません');
+ta.value=n.c;st.textContent=path;
+}catch(e){ta.value='';ta.disabled=true;st.textContent=e.message;}
+title();
+function save1(){
+try{wf(path,ta.value,false,S);dirty=false;st.textContent='保存しました';title();}
+catch(e){st.textContent='保存できません: '+e.message;}
+}
+ta.addEventListener('input',function(){dirty=true;title();});
+b.addEventListener('keydown',function(e){if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'){e.preventDefault();save1();}});
+b.querySelector('[data-a=save]').addEventListener('click',save1);
+}
 function mkAbout(b){
 b.className+=' ab';
-b.innerHTML='<h1>Lacuna OS 0.15</h1><p>ブラウザの中で動くデスクトップです。ウィンドウは、移動、リサイズ、最小化、最大化、閉じるができます。</p><p>ターミナルから、ファイルとユーザー(root)を試せます。パスワードで保存データを暗号化しています。ブラウザアプリを追加しました(サーバー版のみ動きます)。次に作るもの: ブラウザアプリ。</p>';
+b.innerHTML='<h1>Lacuna OS 0.16</h1><p>ブラウザの中で動くデスクトップです。ウィンドウは、移動、リサイズ、最小化、最大化、閉じるができます。</p><p>ターミナルから、ファイルとユーザー(root)を試せます。パスワードで保存データを暗号化しています。ブラウザアプリを追加しました(サーバー版のみ動きます)。次に作るもの: ブラウザアプリ。</p>';
 }
 function mkNotes(b){
 var t=document.createElement('textarea');
@@ -873,7 +1100,7 @@ function prompt(){hdr.textContent='┌──('+S.user+'㉿'+HN+')-['+short(S)+']
 function print(t,c){var d=document.createElement('div');d.textContent=t;if(c)d.className=c;out.appendChild(d);b.scrollTop=b.scrollHeight;}
 function ask(q){return new Promise(function(res){pend=res;inp.type='password';ps.textContent=q;hdr.hidden=true;inp.focus();});}
 var X={S:S,ask:ask};
-print('Lacuna OS 0.15 -- help でコマンド一覧','dim');
+print('Lacuna OS 0.16 -- help でコマンド一覧','dim');
 prompt();
 async function exec(v){
 var t=v.match(/"[^"]*"|'[^']*'|\S+/g).map(function(x){return /^["']/.test(x)?x.slice(1,-1):x;});
@@ -902,7 +1129,7 @@ exec(v).catch(function(){}).then(function(){busy=false;prompt();});
 b.addEventListener('pointerdown',function(e){if(e.target===b||e.target===out||e.target===row)setTimeout(function(){inp.focus();});});
 }
 
-function openApp(id){
+function openApp(id,arg){
 var a=APPS[id],vw=desk.clientWidth,vh=desk.clientHeight;
 var w=Math.min(a.w,vw-12),h=Math.min(a.h,vh-PH-BH-12),n=wins.length%6;
 var el=document.createElement('section');
@@ -910,7 +1137,7 @@ el.className='win';el.setAttribute('role','dialog');el.setAttribute('aria-label'
 el.style.cssText='width:'+w+'px;height:'+h+'px;left:'+Math.max(6,Math.min(110+n*28,vw-w-6))+'px;top:'+Math.max(PH+6,Math.min(PH+10+n*28,vh-BH-h-6))+'px';
 el.innerHTML='<header class="tb">'+ICON(id,'ti')+'<span class="tt">'+a.t+'</span><button data-a="min" aria-label="最小化">'+SMIN+'</button><button data-a="max" aria-label="最大化">'+SMAX+'</button><button data-a="x" aria-label="閉じる">'+SX+'</button></header><div class="bd"></div><i class="rz"></i>';
 var win={el:el,min:false,max:false,prev:null,btn:null};
-a.mk(el.querySelector('.bd'));
+a.mk(el.querySelector('.bd'),arg,win);
 var btn=document.createElement('button');
 btn.className='tk';btn.innerHTML=I[id];btn.setAttribute('aria-label',a.t);btn.title=a.t;
 btn.addEventListener('click',function(){
@@ -990,6 +1217,7 @@ menu.innerHTML='<input class="ms" type="search" placeholder="アプリを検索"
 var al=ALLOW[session.mode],mg=menu.querySelector('.mg');
 Object.keys(APPS).forEach(function(id){
 if(al&&al.indexOf(id)<0)return;
+if(APPS[id].hid)return;
 var ic=document.createElement('button');
 ic.className='ic';ic.innerHTML='<span class="g">'+I[id]+'</span>'+APPS[id].t;
 ic.addEventListener('click',function(){openApp(id);});
