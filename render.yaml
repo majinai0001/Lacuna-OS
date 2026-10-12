@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: lacuna-os
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /healthz
+    envVars:
+      - key: ACCESS_PASSPHRASE
+        sync: false
+      - key: SESSION_SECRET
+        generateValue: true

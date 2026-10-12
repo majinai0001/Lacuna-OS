@@ -1,0 +1,22 @@
+{
+  "name": "lacuna-os",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "@fontsource/zen-maru-gothic": "^5.3.1",
+    "@mercuryworkshop/bare-mux": "latest",
+    "@mercuryworkshop/epoxy-transport": "latest",
+    "@mercuryworkshop/libcurl-transport": "latest",
+    "@mercuryworkshop/scramjet": "latest",
+    "@mercuryworkshop/wisp-js": "^0.3.3",
+    "express": "^4.21.2"
+  }
+}

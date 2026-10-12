@@ -1,0 +1,939 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<title>Lacuna OS</title>
+<!--fonts-local-->
+<link rel="stylesheet" href="/fonts/zen-maru/400.css">
+<link rel="stylesheet" href="/fonts/zen-maru/500.css">
+<link rel="stylesheet" href="/fonts/zen-maru/700.css">
+<link rel="stylesheet" href="/fonts/jetbrains/400.css">
+<link rel="stylesheet" href="/fonts/jetbrains/500.css">
+<link rel="stylesheet" href="/fonts/jetbrains/700.css">
+<!--/fonts-local-->
+<style>
+:root{--bg:#0e1013;--panel:#171a20;--line:#262b36;--win:#12151b;--title:#1c2029;--text:#d5d9e0;--mute:#8a93a3;--acc:#367bf0;--grid:#1b2230;--tint:#1a2433;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#e9ecf2;--panel:#f6f7fa;--line:#cfd4de;--win:#fff;--title:#eceff5;--text:#1b1f27;--mute:#5d6676;--grid:#dde2ec;--tint:#e1e8f5;color-scheme:light}}
+:root[data-theme="light"]{--bg:#e9ecf2;--panel:#f6f7fa;--line:#cfd4de;--win:#fff;--title:#eceff5;--text:#1b1f27;--mute:#5d6676;--grid:#dde2ec;--tint:#e1e8f5;color-scheme:light}
+:root[data-theme="dark"]{--bg:#0e1013;--panel:#171a20;--line:#262b36;--win:#12151b;--title:#1c2029;--text:#d5d9e0;--mute:#8a93a3;--grid:#1b2230;--tint:#1a2433;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
+body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font:500 14px/1.5 "Zen Maru Gothic","Hiragino Maru Gothic ProN","Hiragino Sans","Noto Sans JP",system-ui,sans-serif}
+button{font:inherit}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+#desk{position:relative;height:100%;overflow:hidden}
+#wall{position:absolute;inset:0;width:100%;height:100%}
+.wg{fill:none;stroke:var(--grid)}
+.wa{fill:none;stroke:var(--acc);stroke-width:2;opacity:.45}
+#mark{position:absolute;right:16px;bottom:12px;font:700 clamp(28px,6vw,56px) "JetBrains Mono","Zen Maru Gothic","DejaVu Sans Mono",Menlo,monospace;letter-spacing:.12em;color:var(--grid);pointer-events:none}
+#panel{position:absolute;left:0;right:0;top:0;height:44px;z-index:9999;display:flex;align-items:center;gap:8px;padding:0 8px;background:var(--panel);border-bottom:1px solid var(--line)}
+#mb{width:44px;height:36px;border:0;border-radius:6px;background:var(--acc);color:#fff;display:grid;place-items:center;cursor:pointer}
+#tasks{display:flex;gap:6px;flex:1;min-width:0;overflow-x:auto}
+.tk{height:36px;padding:0 12px;border:0;border-bottom:2px solid transparent;border-radius:6px;background:var(--title);color:var(--text);white-space:nowrap;cursor:pointer}
+.tk.on{border-bottom-color:var(--acc);background:var(--tint)}
+.tk.min{color:var(--mute)}
+#clk{color:var(--mute);padding-right:4px}
+#menu{position:absolute;left:8px;top:48px;z-index:9998;min-width:210px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px}
+#menu[hidden]{display:none}
+#menu button{display:flex;align-items:center;gap:10px;width:100%;height:44px;border:0;border-radius:6px;background:none;color:var(--text);padding:0 10px;text-align:left;cursor:pointer}
+#menu button:hover{background:var(--title)}
+#menu svg,.ic svg{width:22px;height:22px}
+#icons{position:absolute;left:12px;top:56px;display:flex;flex-direction:column;gap:14px}
+.ic{width:84px;display:flex;flex-direction:column;align-items:center;gap:6px;padding:4px;border:0;border-radius:8px;background:none;color:var(--text);font-size:12px;cursor:pointer}
+.ic .g{width:52px;height:52px;border-radius:14px;background:var(--title);border:1px solid var(--line);display:grid;place-items:center}
+.win{position:absolute;display:flex;flex-direction:column;background:var(--win);border:1px solid var(--line);border-radius:8px;overflow:hidden;box-shadow:0 10px 36px rgba(0,0,0,.4)}
+.win.act{border-color:var(--acc)}
+.win.max{border-radius:0}
+.win[hidden]{display:none}
+.tb{height:40px;flex:none;display:flex;align-items:center;padding-left:12px;background:var(--title);touch-action:none;-webkit-user-select:none;user-select:none}
+.tt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--mute)}
+.act .tt{color:var(--text)}
+.tb button{width:40px;height:40px;border:0;background:none;color:var(--mute);display:grid;place-items:center;cursor:pointer}
+.tb button:hover{color:var(--text)}
+.tb svg{width:12px;height:12px}
+.bd{flex:1;min-height:0;overflow:auto}
+.rz{position:absolute;right:0;bottom:0;width:24px;height:24px;cursor:nwse-resize;touch-action:none}
+.rz::after{content:"";position:absolute;right:5px;bottom:5px;width:9px;height:9px;border-right:2px solid var(--mute);border-bottom:2px solid var(--mute)}
+.max .rz{display:none}
+.term{padding:10px 12px;font:500 13px/1.6 "JetBrains Mono","Zen Maru Gothic","DejaVu Sans Mono",Menlo,monospace}
+.term div{white-space:pre-wrap;word-break:break-all}
+.term .pr{color:var(--acc)}
+.term .dim{color:var(--mute)}
+.ln{display:flex;gap:8px;align-items:center}
+.ln input{flex:1;min-width:0;border:0;outline:0;background:none;color:inherit;font:inherit}
+.bd textarea{display:block;box-sizing:border-box;width:100%;height:100%;padding:12px;border:0;outline:0;resize:none;background:transparent;color:var(--text);font:inherit}
+.ab{padding:16px;line-height:1.7}
+.ab h1{margin:0 0 8px;font-size:18px}
+.ab p{margin:0 0 8px}
+#who{color:var(--mute);font-size:13px;white-space:nowrap}
+#who.root{color:var(--text);font-weight:700;border-bottom:2px solid var(--acc)}
+#desk.safe{background:#000}
+.safe #wall,.safe #mark{display:none}
+.rec #icons{display:none}
+#boot{position:fixed;inset:0;z-index:20000;background:var(--bg);display:grid;place-items:center;overflow:auto;padding:16px;box-sizing:border-box}
+#boot[hidden]{display:none}
+.bx{width:min(92vw,360px);display:flex;flex-direction:column;gap:10px;text-align:center}
+.bx h1{margin:0;font-size:22px}
+.bx p{margin:0;color:var(--mute)}
+.bx svg{align-self:center}
+.bx button{min-height:48px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--text);cursor:pointer}
+.bx button[type=submit],#rs{background:var(--acc);border-color:var(--acc);color:#fff}
+.seg{display:flex;gap:8px}
+.seg label{flex:1;border:1px solid var(--line);border-radius:8px;padding:12px;background:var(--panel);cursor:pointer}
+.pw{display:flex;flex-direction:column;gap:4px;text-align:left}
+.pw input{height:44px;border:1px solid var(--line);border-radius:8px;padding:0 12px;background:var(--panel);color:var(--text);font:inherit}
+#le{min-height:1.5em;color:var(--text)}
+.blog{width:min(92vw,460px);text-align:left;font:500 13px/1.8 "JetBrains Mono","Zen Maru Gothic","DejaVu Sans Mono",Menlo,monospace}
+.blog .ok::first-line{color:#3fa66b}
+.blog .warn::first-line{color:#d99a1e}
+.ue{width:min(94vw,760px);display:flex;flex-direction:column;gap:10px}
+.ue h1{margin:0;font-size:22px}
+.tabs{display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid var(--line)}
+.tabs button{min-height:44px;padding:0 16px;border:0;border-bottom:3px solid transparent;background:none;color:var(--mute);white-space:nowrap;cursor:pointer}
+.tabs button.on{color:var(--text);border-bottom-color:var(--acc)}
+.up{border:1px solid var(--line);border-radius:8px;background:var(--panel);padding:4px 14px;min-height:240px;max-height:46vh;overflow:auto}
+.up .dim{color:var(--mute);margin:8px 0}
+.rw{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.rw:last-child{border-bottom:0}
+.rw select,.rw button{min-height:40px;min-width:44px;border:1px solid var(--line);border-radius:6px;background:var(--win);color:var(--text);font:inherit;padding:0 10px}
+.rw input[type=checkbox]{width:22px;height:22px}
+#um{margin:0;min-height:1.5em;color:var(--text)}
+.uf{display:flex;gap:8px;flex-wrap:wrap}
+.uf button{flex:1;min-height:46px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--text);cursor:pointer}
+.ue .pri{background:var(--acc);border-color:var(--acc);color:#fff}
+#desk[data-wp=stars] .wg,#desk[data-wp=stars] .wa{display:none}
+#desk:not([data-wp=stars]) .ws{display:none}
+#desk[data-wp=plain] #wall{display:none}
+.ws{fill:var(--mute)}
+.stt{display:flex;gap:4px;border-bottom:1px solid var(--line);padding:0 8px}
+.stt button{min-height:44px;padding:0 14px;border:0;border-bottom:3px solid transparent;background:none;color:var(--mute);cursor:pointer}
+.stt button.on{color:var(--text);border-bottom-color:var(--acc)}
+.stb{padding:12px 16px;display:flex;flex-direction:column;gap:12px}
+.stb fieldset{border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin:0}
+.stb legend{color:var(--mute);padding:0 6px}
+.stb fieldset label{display:inline-flex;align-items:center;gap:6px;min-height:40px;margin-right:14px}
+.sw{display:flex;gap:10px;flex-wrap:wrap}
+.sw button{width:44px;height:44px;border-radius:50%;border:3px solid transparent;cursor:pointer}
+.sw button[aria-pressed=true]{border-color:var(--text)}
+.stb .r2{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.stb select,.stb input[type=password],.stb button.sb{min-height:44px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--text);font:inherit;padding:0 10px}
+.stb .pri{background:var(--acc);border-color:var(--acc);color:#fff;cursor:pointer}
+.stb .pw{display:flex;flex-direction:column;gap:4px}
+.stb .dim{color:var(--mute);margin:0}
+#sm{min-height:1.5em;margin:0}
+
+:root{--glass:rgba(23,26,32,.72);--r:12px;--ease:cubic-bezier(.2,.8,.2,1)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--glass:rgba(246,247,250,.78)}}
+:root[data-theme="light"]{--glass:rgba(246,247,250,.78)}
+:root[data-theme="dark"]{--glass:rgba(23,26,32,.72)}
+#desk{background:var(--bg)}
+#desk[data-wp=bloom]{background:radial-gradient(60% 55% at 78% 22%,color-mix(in srgb,var(--acc) 60%,transparent),transparent 70%),radial-gradient(55% 60% at 18% 85%,color-mix(in srgb,#7c3aed 45%,transparent),transparent 70%),var(--bg)}
+#desk[data-wp=bloom] #wall,#desk[data-wp=plain] #wall{display:none}
+#desk.safe[data-wp]{background:#000}
+#desk.boot-in{animation:di .5s var(--ease)}
+@keyframes di{from{opacity:0;transform:scale(1.03)}}
+#boot{background:radial-gradient(55% 50% at 80% 15%,color-mix(in srgb,var(--acc) 45%,transparent),transparent 70%),radial-gradient(50% 55% at 15% 90%,color-mix(in srgb,#7c3aed 35%,transparent),transparent 70%),var(--bg)}
+.bx{animation:fi .35s var(--ease)}
+.bx.nf{animation:none}
+@keyframes fi{from{opacity:0;transform:translateY(10px)}}
+.fd{animation:fi .5s var(--ease)}
+.spin{width:34px;height:34px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--acc);animation:sp .8s linear infinite;align-self:center}
+@keyframes sp{to{transform:rotate(360deg)}}
+.bx>svg:first-child{animation:lp 2.4s ease-in-out infinite}
+@keyframes lp{50%{opacity:.65;transform:scale(.95)}}
+.lk{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;cursor:pointer;outline:0;transition:transform .3s var(--ease),opacity .3s;animation:fi .5s var(--ease)}
+.lk.up{transform:translateY(-48px);opacity:0}
+.lt{font-size:clamp(64px,20vw,120px);font-weight:500;line-height:1.05}
+.ld{font-size:20px;color:var(--mute)}
+.lk p{margin:24px 0 0;color:var(--mute)}
+.seg label{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;transition:border-color .2s,background .2s}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg label:has(input:checked){border-color:var(--acc);background:var(--tint)}
+.av{width:52px;height:52px;border-radius:50%;background:var(--acc);color:#fff;display:grid;place-items:center;font-size:22px}
+.oobe{width:min(92vw,420px)}
+.dots{display:flex;gap:6px;justify-content:center;margin-bottom:6px}
+.dots i{width:8px;height:8px;border-radius:50%;background:var(--line);transition:all .25s var(--ease)}
+.dots i.on{width:24px;border-radius:4px;background:var(--acc)}
+.nv{display:flex;gap:10px}
+.nv button{flex:1}
+.cards{display:flex;gap:8px}
+.cd{flex:1;min-height:56px;border:2px solid var(--line)!important;border-radius:12px;transition:transform .18s var(--ease),border-color .18s,background .18s}
+.cd:hover{transform:translateY(-2px)}
+.cd[aria-pressed=true]{border-color:var(--acc)!important;background:var(--tint)!important}
+.oobe .sw{justify-content:center}
+.prog{height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.prog i{display:block;height:100%;width:0;background:var(--acc);transition:width .45s var(--ease)}
+#panel{top:auto;bottom:0;height:52px;justify-content:center;gap:6px;background:var(--glass);backdrop-filter:blur(24px) saturate(1.4);-webkit-backdrop-filter:blur(24px) saturate(1.4);border-top:1px solid var(--line);border-bottom:0}
+#tasks{flex:none;max-width:60vw}
+#mb{width:44px;height:44px;background:none;color:var(--acc);border-radius:10px;transition:background .15s,transform .15s var(--ease)}
+#mb:hover{background:var(--title)}
+#mb:active{transform:scale(.9)}
+.tk{position:relative;width:44px;height:44px;padding:0;display:grid;place-items:center;background:none;border:0;border-radius:10px;transition:background .15s,transform .15s var(--ease)}
+.tk:hover{background:var(--title)}
+.tk:active{transform:scale(.9)}
+.tk svg{width:22px;height:22px}
+.tk::after{content:"";position:absolute;bottom:3px;left:50%;width:6px;height:3px;border-radius:2px;background:var(--mute);transform:translateX(-50%);transition:width .2s var(--ease),background .2s}
+.tk.on::after{width:18px;background:var(--acc)}
+.tk.min{opacity:.7}
+#tray{position:absolute;right:12px;display:flex;gap:12px;align-items:center;font-size:12px;line-height:1.25;text-align:right;color:var(--text)}
+#icons{top:16px}
+.ic .g{transition:transform .18s var(--ease),background .18s}
+.ic:hover .g{transform:translateY(-2px);background:var(--panel)}
+.ic:active .g{transform:scale(.94)}
+.ic{text-shadow:0 1px 3px rgba(0,0,0,.5)}
+.win{border-radius:var(--r);box-shadow:0 8px 24px rgba(0,0,0,.28);animation:wi .22s var(--ease);transition:box-shadow .2s,border-color .2s}
+.win.act{box-shadow:0 18px 48px rgba(0,0,0,.5);border-color:color-mix(in srgb,var(--acc) 45%,var(--line))}
+.win.tr{transition:left .24s var(--ease),top .24s var(--ease),width .24s var(--ease),height .24s var(--ease),border-radius .24s}
+.win.out{animation:wo .16s ease-in forwards}
+.win.mn{animation:wm .18s ease-in forwards}
+.win.rs{animation:wr .22s var(--ease)}
+@keyframes wi{from{opacity:0;transform:scale(.94) translateY(8px)}}
+@keyframes wo{to{opacity:0;transform:scale(.95)}}
+@keyframes wm{to{opacity:0;transform:translateY(70px) scale(.8)}}
+@keyframes wr{from{opacity:0;transform:translateY(50px) scale(.88)}}
+.tb button{transition:background .15s,color .15s}
+.tb button:hover{background:var(--panel)}
+.tb button[data-a=x]:hover{background:#c42b1c;color:#fff}
+#menu{left:50%;bottom:64px;top:auto;width:min(92vw,420px);min-width:0;padding:16px;border-radius:16px;background:var(--glass);backdrop-filter:blur(28px) saturate(1.4);-webkit-backdrop-filter:blur(28px) saturate(1.4);box-shadow:0 20px 60px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:12px;transform:translateX(-50%);animation:mi .22s var(--ease)}
+#menu[hidden]{display:none}
+@keyframes mi{from{opacity:0;transform:translateX(-50%) translateY(18px) scale(.97)}}
+#menu [hidden]{display:none!important}
+#menu .ms{height:40px;border-radius:20px;border:1px solid var(--line);background:var(--panel);color:var(--text);padding:0 16px;font:inherit}
+#menu .mg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+#menu .mg button{width:auto;height:auto;flex-direction:column;justify-content:center;gap:6px;padding:12px 4px;font-size:12px;text-align:center;border-radius:10px}
+#menu .mf{display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--line);padding-top:12px}
+#menu .mf button{width:auto;height:40px;padding:0 12px}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+
+:root{--wp-aurora:url(assets/wp/aurora.webp);--wp-dusk:url(assets/wp/dusk.webp);--wp-forest:url(assets/wp/forest.webp);--wp-paper:url(assets/wp/paper.webp)}
+#wall,#mark{display:none}
+#desk[data-wp=aurora]{background:var(--wp-aurora) center/cover,var(--bg)}
+#desk[data-wp=dusk]{background:var(--wp-dusk) center/cover,var(--bg)}
+#desk[data-wp=forest]{background:var(--wp-forest) center/cover,var(--bg)}
+#desk[data-wp=paper]{background:var(--wp-paper) center/cover,var(--bg)}
+#desk.safe[data-wp]{background:#000}
+#boot{background:linear-gradient(color-mix(in srgb,var(--bg) 35%,transparent),color-mix(in srgb,var(--bg) 35%,transparent)),var(--wp-aurora) center/cover,var(--bg)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) #boot{background:var(--wp-paper) center/cover,var(--bg)}}
+:root[data-theme="light"] #boot{background:var(--wp-paper) center/cover,var(--bg)}
+.ic .g{background:none!important;border:0!important;width:56px;height:56px}
+.ic .g img{width:56px;height:56px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.35))}
+.ic{color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.7)}
+#desk[data-wp=paper] .ic{color:#1b1f27;text-shadow:0 1px 2px rgba(255,255,255,.8)}
+#desk[data-wp=plain] .ic{color:var(--text);text-shadow:none}
+.tk img{width:28px;height:28px}
+#menu .mg img{width:40px;height:40px}
+.ti{width:18px;height:18px;margin-right:8px}
+.bx>img:first-child{align-self:center;animation:lp 2.4s ease-in-out infinite}
+.wpb{background-size:cover;background-position:center}
+
+:root{--bg:#202020;--panel:#2b2b2b;--win:#202020;--title:#202020;--line:#3a3a3a;--text:#ffffff;--mute:#b8b8b8;--glass:rgba(32,32,32,.85);--ctl:rgba(255,255,255,.06);--ctlh:rgba(255,255,255,.09);--ctlp:rgba(255,255,255,.04);--cb:rgba(255,255,255,.09);--wb:rgba(255,255,255,.14);--tint:color-mix(in srgb,var(--acc) 22%,#202020)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f3f3f3;--panel:#fbfbfb;--win:#f3f3f3;--title:#f3f3f3;--line:#e3e3e3;--text:#1a1a1a;--mute:#5c5c5c;--glass:rgba(243,243,243,.85);--ctl:#fbfbfb;--ctlh:#f6f6f6;--ctlp:#f5f5f5;--cb:rgba(0,0,0,.1);--wb:rgba(0,0,0,.18);--tint:color-mix(in srgb,var(--acc) 14%,#f3f3f3)}}
+:root[data-theme="light"]{--bg:#f3f3f3;--panel:#fbfbfb;--win:#f3f3f3;--title:#f3f3f3;--line:#e3e3e3;--text:#1a1a1a;--mute:#5c5c5c;--glass:rgba(243,243,243,.85);--ctl:#fbfbfb;--ctlh:#f6f6f6;--ctlp:#f5f5f5;--cb:rgba(0,0,0,.1);--wb:rgba(0,0,0,.18);--tint:color-mix(in srgb,var(--acc) 14%,#f3f3f3)}
+:root[data-theme="dark"]{--bg:#202020;--panel:#2b2b2b;--win:#202020;--title:#202020;--line:#3a3a3a;--text:#ffffff;--mute:#b8b8b8;--glass:rgba(32,32,32,.85);--ctl:rgba(255,255,255,.06);--ctlh:rgba(255,255,255,.09);--ctlp:rgba(255,255,255,.04);--cb:rgba(255,255,255,.09);--wb:rgba(255,255,255,.14);--tint:color-mix(in srgb,var(--acc) 22%,#202020)}
+*{scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--mute) 55%,transparent) transparent}
+.bx button,.uf button,.rw button,.stb .sb,.fly button{background:var(--ctl);border:1px solid var(--cb);border-radius:4px;min-height:40px;color:var(--text);font:inherit}
+.bx button:hover,.uf button:hover,.rw button:hover,.stb .sb:hover{background:var(--ctlh)}
+.bx button:active,.uf button:active,.rw button:active,.stb .sb:active{background:var(--ctlp)}
+.bx button[type=submit],.uf .pri,.stb .pri,#rs{background:var(--acc);border-color:var(--acc);color:#fff}
+.bx button[type=submit]:hover,.uf .pri:hover,.stb .pri:hover,#rs:hover{background:var(--acc);filter:brightness(1.1)}
+.bx button[type=submit]:active,.uf .pri:active,.stb .pri:active,#rs:active{background:var(--acc);filter:brightness(.92)}
+.pw input,#menu .ms,.stb select,.stb input[type=password],.rw select{height:40px;border:1px solid var(--cb);border-radius:4px;background:var(--ctl);color:var(--text);font:inherit;padding:0 12px;box-shadow:inset 0 -1px 0 var(--cb)}
+.pw input:focus,.stb input:focus,.stb select:focus,.rw select:focus,#menu .ms:focus{outline:none;box-shadow:inset 0 -2px 0 var(--acc)}
+#menu .ms{border-radius:20px}
+.rw input[type=checkbox]{appearance:none;-webkit-appearance:none;position:relative;flex:none;width:40px;height:20px;margin:0;border-radius:10px;border:1px solid var(--mute);background:transparent;cursor:pointer;transition:background .15s,border-color .15s}
+.rw input[type=checkbox]::after{content:"";position:absolute;top:3px;left:3px;width:12px;height:12px;border-radius:50%;background:var(--mute);transition:transform .15s var(--ease),background .15s}
+.rw input[type=checkbox]:checked{background:var(--acc);border-color:var(--acc)}
+.rw input[type=checkbox]:checked::after{transform:translateX(20px);background:#fff}
+.stb input[type=radio]{appearance:none;-webkit-appearance:none;width:20px;height:20px;margin:0;border-radius:50%;border:1px solid var(--mute);background:transparent;cursor:pointer}
+.stb input[type=radio]:checked{border:6px solid var(--acc);background:#fff}
+.stt{flex-direction:column;width:140px;flex:none;padding:8px 6px;gap:2px;border-bottom:0;border-right:1px solid var(--line)}
+.stt button{position:relative;min-height:40px;padding:0 12px;border:0;border-radius:4px;background:none;color:var(--text);font:inherit;text-align:left}
+.stt button:hover,.stt button.on{background:var(--ctl)}
+.stt button.on{border-bottom-color:transparent}
+.stt button.on::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:3px;border-radius:2px;background:var(--acc)}
+.st{display:flex}
+.stb{flex:1;min-width:0;overflow:auto}
+.stb fieldset{background:var(--panel);border:1px solid var(--line);border-radius:8px}
+.win{border:1px solid var(--wb);border-radius:8px;background:var(--win);box-shadow:0 8px 32px rgba(0,0,0,.37)}
+.win.act{border-color:var(--wb);box-shadow:0 16px 48px rgba(0,0,0,.5)}
+.win.max{border:0;border-radius:0}
+.tb{height:32px;background:transparent;padding-left:12px}
+.ti{width:16px;height:16px;margin-right:8px}
+.tt{font-size:12px}
+.tb button{width:46px;height:32px}
+.tb svg{width:10px;height:10px}
+.tb button:hover{background:var(--ctlh)}
+.tb button[data-a=x]:hover{background:#c42b1c;color:#fff}
+.rz::after{display:none}
+.term{background:#0c0c0c;color:#cccccc}
+.term .pr{color:#3b8eea}
+.term .dim{color:#8a8a8a}
+#panel{height:48px;background:var(--glass);border-top:1px solid var(--line)}
+#mb,.tk{width:40px;height:40px;border-radius:4px}
+.tk img{width:24px;height:24px}
+.tk::after{bottom:2px}
+.tk.on::after{width:16px}
+#menu{width:min(94vw,560px);bottom:60px;padding:0;gap:0;border-radius:8px;border:1px solid var(--line);background:var(--glass);box-shadow:0 8px 32px rgba(0,0,0,.4)}
+#menu .ms{margin:20px 24px 4px;width:calc(100% - 48px);box-sizing:border-box}
+#menu .mh{padding:12px 28px 0;font-size:13px}
+#menu .mg{grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:4px;padding:8px 20px 16px;min-height:96px}
+#menu .mg button{width:auto;border-radius:4px}
+#menu .mg button:hover{background:var(--ctl)}
+#menu .mg img{width:36px;height:36px}
+#menu .mf{height:64px;padding:0 16px;border-top:1px solid var(--line);border-radius:0 0 8px 8px;background:rgba(0,0,0,.08)}
+.mu{display:flex;align-items:center;gap:10px}
+.av2{width:32px;height:32px;border-radius:50%;background:var(--acc);color:#fff;display:grid;place-items:center}
+.pw2{position:relative}
+.pb{width:40px;padding:0!important;display:grid!important;place-items:center}
+.fly{position:absolute;right:0;bottom:48px;min-width:150px;padding:4px;display:flex;flex-direction:column;gap:2px;border:1px solid var(--line);border-radius:8px;background:var(--glass);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.fly[hidden]{display:none}
+.fly button{width:100%;justify-content:flex-start;border:0;background:none;padding:0 12px}
+.fly button:hover{background:var(--ctl)}
+#tray{gap:12px}
+.ti2{display:flex;gap:10px}
+.ti2 svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round}
+.ic{border-radius:4px}
+.ic:hover{background:rgba(255,255,255,.1)}
+.ic:active{background:rgba(255,255,255,.06)}
+#desk[data-wp=paper] .ic:hover{background:rgba(0,0,0,.08)}
+.av{width:64px;height:64px;font-size:26px}
+.seg label{border:0;background:none;border-radius:8px}
+.seg label:has(input:checked){background:var(--ctlh);border:0}
+.nv{justify-content:flex-end}
+.nv button{flex:none;min-width:120px}
+.nv button[data-g]{margin-right:auto}
+.nv button:only-child{margin:0 auto}
+.cd{border-radius:8px}
+.br{display:flex;flex-direction:column}
+.bt{display:flex;align-items:center;gap:4px;padding:6px 8px;border-bottom:1px solid var(--line)}
+.bt button{width:36px;height:36px;flex:none;display:grid;place-items:center;border:0;border-radius:4px;background:none;color:var(--text);cursor:pointer}
+.bt button:hover{background:var(--ctlh)}
+.bt svg{width:16px;height:16px}
+.bu{flex:1;min-width:0}
+.bu input{width:100%;box-sizing:border-box;height:36px;border:1px solid var(--cb);border-radius:18px;background:var(--ctl);color:var(--text);font:inherit;padding:0 14px}
+.bu input:focus{outline:none;box-shadow:inset 0 -2px 0 var(--acc)}
+.bm{flex:1;min-height:0;position:relative}
+.bm iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#fff}
+.bs{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:16px;text-align:center}
+.bs[hidden],.bm iframe[hidden]{display:none}
+.bs p{margin:0;max-width:420px}
+.ul{display:flex;gap:8px}
+.ul input{height:40px;border:1px solid var(--cb);border-radius:4px;background:var(--ctl);color:var(--text);font:inherit;padding:0 12px}
+</style>
+</head>
+<body>
+<div id="desk">
+<svg id="wall" viewBox="0 0 1280 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+<path class="wg" d="M0 200h1280M0 400h1280M0 600h1280M200 0v800M400 0v800M600 0v800M800 0v800M1000 0v800M1200 0v800"/>
+<path class="wa" d="M820 780L1000 470l90 150 70-110 120 270"/>
+<g class="ws"><circle cx="90" cy="120" r="1.8"/><circle cx="240" cy="300" r="1.3"/><circle cx="420" cy="90" r="2"/><circle cx="640" cy="60" r="1.3"/><circle cx="900" cy="140" r="1.8"/><circle cx="1120" cy="80" r="1.5"/><circle cx="1200" cy="320" r="1.3"/><circle cx="1010" cy="560" r="1.8"/><circle cx="160" cy="620" r="1.5"/><circle cx="330" cy="720" r="1.3"/><circle cx="780" cy="700" r="2"/><circle cx="1180" cy="690" r="1.3"/><circle cx="560" cy="420" r="1.5"/><circle cx="60" cy="440" r="1.3"/></g>
+</svg>
+<div id="mark">LACUNA OS</div>
+<nav id="panel">
+<button id="mb" aria-label="アプリメニュー" aria-expanded="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M14 3.5A9 9 0 1 0 20.5 14"/><circle cx="16.5" cy="7.5" r="1.4" fill="currentColor" stroke="none"/></svg></button>
+<div id="tasks"></div>
+<div id="tray"><span id="who"></span><span class="ti2" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M1.5 6a9 9 0 0 1 13 0M3.7 8.6a5.8 5.8 0 0 1 8.6 0M6 11.2a2.6 2.6 0 0 1 4 0"/></svg><svg viewBox="0 0 16 16"><path d="M2 6h2.5L8 3v10L4.5 10H2zM10.5 5.5a3.5 3.5 0 0 1 0 5"/></svg></span><span id="clk"></span></div>
+</nav>
+<div id="menu" hidden></div>
+<div id="icons"></div>
+</div>
+<div id="boot"></div>
+<script id="lacuna-js">
+(function(){
+var PH=0,BH=48,z=10,cur=null,wins=[],session={user:'user',mode:'normal'};
+var desk=document.getElementById('desk'),tasks=document.getElementById('tasks'),menu=document.getElementById('menu'),mb=document.getElementById('mb');
+var ICONS={browser:'assets/icons/browser.svg',term:'assets/icons/term.svg',notes:'assets/icons/notes.svg',settings:'assets/icons/settings.svg',about:'assets/icons/about.svg'};
+function ICON(id,c){return '<img class="'+(c||'ico')+'" src="'+ICONS[id]+'" alt="" draggable="false">';}
+var I={};Object.keys(ICONS).forEach(function(k){I[k]=ICON(k);});
+var S='<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true">';
+var SMIN=S+'<path d="M2 9h8"/></svg>',SMAX=S+'<rect x="2" y="2" width="8" height="8"/></svg>',SX=S+'<path d="M2 2l8 8M10 2l-8 8"/></svg>',SRS=S+'<path d="M3.5 3.5V2h6.5v6.5H8.5M2 3.5h6.5V10H2z"/></svg>';
+
+var APPS={
+browser:{t:'ブラウザ',w:760,h:520,mk:mkBrowser},
+term:{t:'ターミナル',w:560,h:340,mk:mkTerm},
+notes:{t:'メモ',w:420,h:300,mk:mkNotes},
+settings:{t:'設定',w:440,h:460,mk:mkSettings},
+about:{t:'Lacuna OSについて',w:380,h:250,mk:mkAbout}};
+
+var fs=null,stt=null;
+function idb(){return new Promise(function(res,rej){var r=indexedDB.open('lacuna',1);r.onupgradeneeded=function(){r.result.createObjectStore('kv');};r.onsuccess=function(){res(r.result);};r.onerror=function(){rej(r.error);};});}
+function kvGet(k){return idb().then(function(db){return new Promise(function(res){var q=db.transaction('kv').objectStore('kv').get(k);q.onsuccess=function(){res(q.result);};q.onerror=function(){res(undefined);};});}).catch(function(){return undefined;});}
+function kvSet(k,v){return idb().then(function(db){return new Promise(function(res){var t=db.transaction('kv','readwrite');t.objectStore('kv').put(v,k);t.oncomplete=function(){res();};t.onerror=function(){res();};});}).catch(function(){});}
+function D(o,m,k){return{t:'d',o:o,m:m,k:k||{}};}
+function F(o,m,c){return{t:'f',o:o,m:m,c:c};}
+function seed(){return D('root','755',{etc:D('root','755',{hostname:F('root','644','lacuna\n'),motd:F('root','644','Lacuna OS 0.12\n')}),home:D('root','755',{user:D('user','755',{'readme.txt':F('user','644','Lacuna OSへようこそ。\n')})}),root:D('root','700',{'secret.txt':F('root','600','rootだけが読めるファイルです。\n')}),tmp:D('root','777')});}
+function kvClear(){return idb().then(function(db){return new Promise(function(res){var t=db.transaction('kv','readwrite');t.objectStore('kv').clear();t.oncomplete=function(){res();};t.onerror=function(){res();};});}).catch(function(){});}
+var ITER=600000,enc=new TextEncoder(),dec=new TextDecoder(),dk=null,dkRaw=null,meta=null;
+var metaReady=(async function(){meta=await kvGet('meta');})();
+function b64(u){var t='';u.forEach(function(x){t+=String.fromCharCode(x);});return btoa(t);}
+function unb64(t){return Uint8Array.from(atob(t),function(c){return c.charCodeAt(0);});}
+async function kek(pw,salt,it){var m=await crypto.subtle.importKey('raw',enc.encode(pw),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt:salt,iterations:it,hash:'SHA-256'},m,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);}
+async function seal(key,bytes){var iv=crypto.getRandomValues(new Uint8Array(12));var ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv:iv},key,bytes));return{iv:b64(iv),ct:b64(ct)};}
+async function unseal(key,o){return new Uint8Array(await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(o.iv)},key,unb64(o.ct)));}
+function importDk(raw){return crypto.subtle.importKey('raw',raw,'AES-GCM',false,['encrypt','decrypt']);}
+async function mkSlot(pw,raw){var salt=crypto.getRandomValues(new Uint8Array(16));var w=await seal(await kek(pw,salt,ITER),raw);return{salt:b64(salt),it:ITER,iv:w.iv,ct:w.ct};}
+async function unslot(u,pw){var sl=meta&&meta.slots&&meta.slots[u];if(!sl)return null;try{return await unseal(await kek(pw,unb64(sl.salt),sl.it),sl);}catch(e){return null;}}
+async function lockLeft(){var l=(await kvGet('lock'))||{n:0,until:0};return Math.max(0,l.until-Date.now());}
+async function noteFail(){var l=(await kvGet('lock'))||{n:0,until:0};l.n++;if(l.n>=3)l.until=Date.now()+Math.min(300,5*Math.pow(2,l.n-3))*1000;await kvSet('lock',l);}
+async function verify(u,pw){var left=await lockLeft();if(left>0)throw new Error('ロック中です。あと'+Math.ceil(left/1000)+'秒');var raw=await unslot(u,pw);if(raw){await kvSet('lock',{n:0,until:0});return raw;}await noteFail();return null;}
+async function ok(u,p){return !!(await verify(u,p));}
+async function persist(){if(!fs||!dk)return;await kvSet('fs',await seal(dk,enc.encode(JSON.stringify(fs))));await kvSet('meta',meta);}
+function save(){clearTimeout(stt);if(!dk)return;stt=setTimeout(persist,300);}
+async function lockMem(){clearTimeout(stt);await persist();fs=null;dk=null;dkRaw=null;}
+async function loadFs(){var e=await kvGet('fs');if(!e){fs=seed();save();return;}fs=JSON.parse(dec.decode(await unseal(dk,e)));}
+function can(n,u,a){if(u==='root')return true;var d=n.m.charAt(n.o===u?0:2);return (d&{r:4,w:2,x:1}[a])>0;}
+function home(u){return u==='root'?'/root':'/home/'+u;}
+function norm(p,S){if(p==='~'||p.indexOf('~/')===0)p=home(S.user)+p.slice(1);var o=[];(p.charAt(0)==='/'?p:S.cwd+'/'+p).split('/').forEach(function(x){if(!x||x==='.')return;if(x==='..')o.pop();else o.push(x);});return o;}
+function find(p,S){var n=fs,q=norm(p,S);for(var i=0;i<q.length;i++){if(n.t!=='d')return null;if(!can(n,S.user,'x'))throw new Error('許可がありません');n=n.k[q[i]];if(!n)return null;}return n;}
+function split(p,S){var q=norm(p,S),name=q.pop();if(!name)throw new Error('パスが不正です');var d=find('/'+q.join('/'),S);if(!d||d.t!=='d')throw new Error('そのようなディレクトリはありません');return{d:d,name:name};}
+function short(S){var p=S.cwd,h=home(S.user);return p===h?'~':p.indexOf(h+'/')===0?'~'+p.slice(h.length):p;}
+function perm(n){return (n.t==='d'?'d':'-')+n.m.split('').map(function(d){return 'rwx'.split('').map(function(c,i){return (d&(4>>i))?c:'-';}).join('');}).join('');}
+function wf(p,c,app,S){var s=split(p,S),n=s.d.k[s.name];if(n){if(n.t==='d')throw new Error('ディレクトリです');if(!can(n,S.user,'w'))throw new Error('許可がありません');n.c=app?n.c+c:c;}else{if(!can(s.d,S.user,'w'))throw new Error('許可がありません');s.d.k[s.name]=F(S.user,'644',c);}save();}
+function need(p,S,t){var n=find(p,S);if(!n)throw new Error(p+': そのようなファイルはありません');if(t&&n.t!==t)throw new Error(p+': 種類が違います');return n;}
+var CMD={
+help:function(){return 'help pwd ls cd cat echo mkdir touch rm chmod\nwhoami id su sudo exit passwd reset\ndate uname clear open <アプリ名>\nls は -l -a、rm は -r、echo は > と >> が使えます。';},
+pwd:function(a,X){return X.S.cwd;},
+echo:function(a){return a.join(' ');},
+date:function(){return new Date().toString();},
+uname:function(){return 'Lacuna OS 0.12 (browser)';},
+whoami:function(a,X){return X.S.user;},
+id:function(a,X){return X.S.user==='root'?'uid=0(root) gid=0(root)':'uid=1000('+X.S.user+') gid=1000('+X.S.user+')';},
+open:function(a){if(APPS[a[0]]){openApp(a[0]);return a[0]+' を開きました';}return '使い方: open browser | term | notes | settings | about';},
+ls:function(a,X){var S=X.S,l=0,all=0,ps=[];a.forEach(function(x){if(x.charAt(0)==='-'){if(x.indexOf('l')>0)l=1;if(x.indexOf('a')>0)all=1;}else ps.push(x);});var p=ps[0]||'.',n=need(p,S),it;
+if(n.t==='d'){if(!can(n,S.user,'r'))throw new Error('許可がありません');it=Object.keys(n.k).sort().filter(function(k){return all||k.charAt(0)!=='.';}).map(function(k){return[k,n.k[k]];});}else it=[[p,n]];
+return it.map(function(i){var nm=i[0]+(i[1].t==='d'?'/':'');return l?perm(i[1])+' '+i[1].o+' '+nm:nm;}).join(l?'\n':'  ');},
+cd:function(a,X){var S=X.S,p=a[0]||'~',n=need(p,S,'d');if(!can(n,S.user,'x'))throw new Error('許可がありません');S.cwd='/'+norm(p,S).join('/');return '';},
+cat:function(a,X){return a.map(function(p){var n=need(p,X.S,'f');if(!can(n,X.S.user,'r'))throw new Error(p+': 許可がありません');return n.c;}).join('').replace(/\n$/,'');},
+mkdir:function(a,X){a.forEach(function(p){var s=split(p,X.S);if(s.d.k[s.name])throw new Error(p+': 既に存在します');if(!can(s.d,X.S.user,'w'))throw new Error('許可がありません');s.d.k[s.name]=D(X.S.user,'755');});save();return '';},
+touch:function(a,X){a.forEach(function(p){var s=split(p,X.S);if(s.d.k[s.name])return;if(!can(s.d,X.S.user,'w'))throw new Error('許可がありません');s.d.k[s.name]=F(X.S.user,'644','');});save();return '';},
+rm:function(a,X){var r=a.indexOf('-r')>=0;a.filter(function(x){return x.charAt(0)!=='-';}).forEach(function(p){var s=split(p,X.S),n=s.d.k[s.name];if(!n)throw new Error(p+': そのようなファイルはありません');if(n.t==='d'&&!r)throw new Error(p+': ディレクトリです(-r が必要)');if(!can(s.d,X.S.user,'w'))throw new Error('許可がありません');delete s.d.k[s.name];});save();return '';},
+chmod:function(a,X){if(!/^[0-7]{3}$/.test(a[0]||'')||!a[1])throw new Error('使い方: chmod 644 ファイル');var n=need(a[1],X.S);if(X.S.user!=='root'&&n.o!==X.S.user)throw new Error('許可がありません');n.m=a[0];save();return '';},
+su:async function(a,X){var S=X.S,t=a[0]||'root';if(!meta.slots[t])throw new Error('ユーザー '+t+' は存在しません');if(S.user!=='root'&&!await ok(t,await X.ask('パスワード: ')))throw new Error('認証に失敗しました');S.stack.push({user:S.user,cwd:S.cwd});S.user=t;S.cwd=home(t);return '';},
+exit:function(a,X){var p=X.S.stack.pop();if(!p){logout();return '';}X.S.user=p.user;X.S.cwd=p.cwd;return '';},
+sudo:async function(a,X){var S=X.S;if(!a.length)throw new Error('使い方: sudo コマンド');if(S.user!=='root'&&!await ok(S.user,await X.ask(S.user+' のパスワード: ')))throw new Error('認証に失敗しました');var c=a.shift();if(!CMD.hasOwnProperty(c))throw new Error(c+': コマンドが見つかりません');var S2={user:'root',cwd:S.cwd,stack:[]};var r=await CMD[c](a,{S:S2,ask:X.ask});S.cwd=S2.cwd;return r;},
+passwd:async function(a,X){var S=X.S,t=a[0]||S.user;if(!meta.slots[t])throw new Error('ユーザー '+t+' は存在しません');if(S.user!=='root'){if(t!==S.user)throw new Error('許可がありません');if(!await ok(t,await X.ask('現在のパスワード: ')))throw new Error('認証に失敗しました');}var n1=await X.ask('新しいパスワード: '),n2=await X.ask('もう一度: ');if(n1!==n2)throw new Error('パスワードが一致しません');if(n1.length<8)throw new Error('8文字以上にしてください');meta.slots[t]=await mkSlot(n1,dkRaw);save();return 'パスワードを変更しました';},
+reset:async function(a,X){if(X.S.user!=='root')throw new Error('rootだけが実行できます');clearTimeout(stt);await kvClear();fs=null;dk=null;dkRaw=null;meta=null;setTimeout(function(){closeAll();setup();},0);return 'すべて消しました。初期設定の画面に戻ります。';}};
+var PD={theme:'auto',acc:'#367bf0',wp:'aurora'},WPS=['aurora','dusk','forest','paper','plain'];
+var ACC=[['青','#367bf0'],['紫','#7c3aed'],['緑','#15803d'],['橙','#c2410c'],['赤紫','#be185d']];
+function applyPrefs(p){
+var r=document.documentElement;
+if(p.theme==='dark'||p.theme==='light')r.setAttribute('data-theme',p.theme);else r.removeAttribute('data-theme');
+r.style.setProperty('--acc',p.acc||PD.acc);
+desk.setAttribute('data-wp',WPS.indexOf(p.wp)>=0?p.wp:'aurora');
+}
+function loadPrefs(){try{var n=find('~/.config/lacuna.json',{user:session.user,cwd:'/',stack:[]});return Object.assign({},PD,n&&n.t==='f'?JSON.parse(n.c):{});}catch(e){return Object.assign({},PD);}}
+function savePrefs(p){var S={user:session.user,cwd:'/',stack:[]},n=fs;norm('~/.config',S).forEach(function(x){if(!n.k[x])n.k[x]=D(S.user,'755');n=n.k[x];});wf('~/.config/lacuna.json',JSON.stringify(p),false,S);}
+function hostname(){try{var n=find('/etc/hostname',{user:'root',cwd:'/',stack:[]});return (n&&n.t==='f'&&n.c.trim())||'lacuna';}catch(e){return 'lacuna';}}
+function mkSettings(b){
+b.className+=' st';
+var tab='look',p=loadPrefs(),msg='',armed=false;
+var TBS=[['look','外観'],['acc','アカウント'],['sys','システム']];
+function opt(v,l,cur){return '<option value="'+v+'"'+(cur===v?' selected':'')+'>'+l+'</option>';}
+function draw(){
+var h='<div class="stt" role="tablist">'+TBS.map(function(t){return '<button role="tab" data-t="'+t[0]+'" aria-selected="'+(t[0]===tab)+'"'+(t[0]===tab?' class="on"':'')+'>'+t[1]+'</button>';}).join('')+'</div><div class="stb">';
+if(tab==='look'){
+h+='<fieldset><legend>テーマ</legend>'+[['auto','自動'],['dark','ダーク'],['light','ライト']].map(function(x){return '<label><input type="radio" name="th" value="'+x[0]+'"'+(p.theme===x[0]?' checked':'')+'> '+x[1]+'</label>';}).join('')+'</fieldset>';
+h+='<fieldset><legend>アクセント色</legend><div class="sw">'+ACC.map(function(c){return '<button data-c="'+c[1]+'" aria-label="'+c[0]+'" aria-pressed="'+(p.acc===c[1])+'" style="background:'+c[1]+'"></button>';}).join('')+'</div></fieldset>';
+h+='<label class="r2"><span>壁紙</span><select id="wp">'+opt('aurora','オーロラ',p.wp)+opt('dusk','夕焼け',p.wp)+opt('forest','森',p.wp)+opt('paper','紙(ライト向け)',p.wp)+opt('plain','無地',p.wp)+'</select></label>';
+h+='<p class="dim">設定は、ユーザーごとに暗号化して保存されます。</p>';
+}else if(tab==='acc'){
+var root=session.user==='root';
+h+='<p class="dim">'+(root?'rootは、他のユーザーのパスワードも変えられます。':session.user+' のパスワードを変更します。')+'</p>';
+if(root)h+='<label class="r2"><span>対象</span><select id="tg"><option value="root">root</option><option value="user">user</option></select></label>';
+h+='<label class="pw" id="cw"><span>現在のパスワード</span><input type="password" id="cp" autocomplete="off"></label><label class="pw"><span>新しいパスワード(8文字以上)</span><input type="password" id="n1" autocomplete="new-password"></label><label class="pw"><span>もう一度</span><input type="password" id="n2" autocomplete="new-password"></label><button class="sb pri" data-a="pw" style="min-height:46px;border-radius:8px">変更する</button>';
+}else{
+h+=[['バージョン','Lacuna OS 0.12'],['ユーザー',session.user],['暗号化','AES-GCM / PBKDF2 60万回'],['自動ログアウト',uefi.idle?uefi.idle+'分(UEFIで変更)':'なし(UEFIで変更)'],['Secure Boot',uefi.sb?'ON':'OFF']].map(function(r){return '<div class="r2"><span>'+r[0]+'</span><b>'+r[1]+'</b></div>';}).join('');
+if(session.user==='root')h+='<button class="sb" data-a="rs" style="min-height:46px">'+(armed?'もう一度押すと、すべて消します':'すべて初期化(rootのみ)')+'</button>';
+}
+b.innerHTML=h+'<p id="sm" role="status">'+msg+'</p></div>';
+}
+function note(m){msg=m;var e=b.querySelector('#sm');if(e)e.textContent=m;}
+b.addEventListener('click',async function(e){
+var t=e.target.closest('button');if(!t)return;
+var tb=t.getAttribute('data-t'),c=t.getAttribute('data-c'),a=t.getAttribute('data-a');
+if(tb){tab=tb;msg='';armed=false;draw();return;}
+if(c){p.acc=c;applyPrefs(p);savePrefs(p);draw();return;}
+if(a==='rs'){if(!armed){armed=true;draw();return;}await CMD.reset([],{S:{user:'root',cwd:'/',stack:[]}});return;}
+if(a==='pw'){
+try{
+var root=session.user==='root',tg=root?b.querySelector('#tg').value:session.user;
+if(!(root&&tg!==session.user)&&!(await ok(tg,b.querySelector('#cp').value))){note('現在のパスワードが違います');return;}
+var n1=b.querySelector('#n1').value,n2=b.querySelector('#n2').value;
+if(n1.length<8){note('8文字以上にしてください');return;}
+if(n1!==n2){note('確認用のパスワードが一致しません');return;}
+meta.slots[tg]=await mkSlot(n1,dkRaw);save();draw();note(tg+' のパスワードを変更しました');
+}catch(x){note(x.message);}
+}
+});
+b.addEventListener('change',function(e){
+var el=e.target;
+if(el.name==='th'){p.theme=el.value;applyPrefs(p);savePrefs(p);}
+else if(el.id==='wp'){p.wp=el.value;applyPrefs(p);savePrefs(p);}
+else if(el.id==='tg'){var cw=b.querySelector('#cw');if(cw)cw.hidden=(el.value!==session.user);}
+});
+draw();
+}
+var proxyP=null,scram=null;
+function loadScript(src){return new Promise(function(res,rej){var s=document.createElement('script');s.src=src;s.onload=res;s.onerror=function(){rej(new Error(src+' を読み込めませんでした'));};document.head.appendChild(s);});}
+async function sessionState(){try{var r=await fetch('/api/session',{credentials:'same-origin'});if(!r.ok||(r.headers.get('content-type')||'').indexOf('json')<0)return 'none';return (await r.json()).ok?'open':'locked';}catch(e){return 'none';}}
+function initProxy(){
+if(proxyP)return proxyP;
+proxyP=(async function(){
+if(!('serviceWorker' in navigator))throw new Error('このブラウザは、Service Workerに対応していません');
+await loadScript('/baremux/index.js');await loadScript('/scram/scramjet.all.js');
+await navigator.serviceWorker.register('/sw.js',{scope:'/'});
+await navigator.serviceWorker.ready;
+var C=$scramjetLoadController().ScramjetController;
+scram=new C({files:{wasm:'/scram/scramjet.wasm.wasm',all:'/scram/scramjet.all.js',sync:'/scram/scramjet.sync.js'}});
+await scram.init();
+var conn=new BareMux.BareMuxConnection('/baremux/worker.js');
+await conn.setTransport('/libcurl/index.mjs',[{websocket:(location.protocol==='https:'?'wss://':'ws://')+location.host+'/wisp/'}]);
+})();
+proxyP.catch(function(){proxyP=null;});
+return proxyP;
+}
+function toUrl(v){v=v.trim();if(!v)return '';var u=/^https?:\/\//i.test(v)?v:(/^[\w-]+(\.[\w-]+)+(:\d+)?([\/?#]\S*)?$/.test(v)?'https://'+v:'');return u||'https://duckduckgo.com/?q='+encodeURIComponent(v);}
+function mkBrowser(b){
+b.className+=' br';
+var ar='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">';
+b.innerHTML='<div class="bt"><button type="button" data-n="b" aria-label="戻る">'+ar+'<path d="M10 3L5 8l5 5"/></svg></button><button type="button" data-n="f" aria-label="進む">'+ar+'<path d="M6 3l5 5-5 5"/></svg></button><button type="button" data-n="r" aria-label="更新">'+ar+'<path d="M13 8a5 5 0 1 1-1.8-3.8M13 2.5V5h-2.5"/></svg></button><form class="bu"><input type="text" aria-label="URLまたは検索" placeholder="検索するか、URLを入力" autocomplete="off" autocapitalize="off" spellcheck="false"></form></div><div class="bm"><div class="bs" role="status"></div><iframe title="ブラウザ" hidden allow="fullscreen"></iframe></div>';
+var bs=b.querySelector('.bs'),fr=b.querySelector('iframe'),inp=b.querySelector('input'),frame=null;
+function msg(t,btns){
+bs.hidden=false;fr.hidden=true;bs.textContent='';
+var p=document.createElement('p');p.textContent=t;bs.appendChild(p);
+(btns||[]).forEach(function(x){var q=document.createElement('button');q.type='button';q.className='sb';q.textContent=x[0];q.addEventListener('click',x[1]);bs.appendChild(q);});
+}
+function go(v){var u=toUrl(v);if(!u||!frame)return;bs.hidden=true;fr.hidden=false;inp.value=u;frame.go(u);}
+function unlock(){
+bs.hidden=false;fr.hidden=true;
+bs.innerHTML='<p>合言葉を入力してください</p><form class="ul"><input type="password" aria-label="合言葉" autocomplete="off"><button type="submit" class="sb pri">解除</button></form><p class="er" role="alert"></p>';
+var f=bs.querySelector('form'),pw=f.querySelector('input'),er=bs.querySelector('.er');
+f.addEventListener('submit',async function(e){
+e.preventDefault();er.textContent='確認中...';
+try{
+var r=await fetch('/api/unlock',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pass:pw.value})});
+var j=await r.json();
+if(j.ok){start();}else{er.textContent=j.error||'解除できませんでした';pw.value='';}
+}catch(x){er.textContent='通信に失敗しました';}
+});
+}
+async function start(){
+msg('接続を準備しています...');
+try{
+var st=await sessionState();
+if(st==='none'){msg('このページでは、ブラウザを使えません。ブラウザは、Renderなどに載せたサーバー版のLacuna OSで動きます。');return;}
+if(st==='locked'){unlock();return;}
+await initProxy();
+frame=scram.createFrame(fr);
+frame.addEventListener('urlchange',function(e){var u=e.url;try{if(u.indexOf(location.origin)===0)u=scram.decodeUrl(u);}catch(x){}inp.value=u;});
+msg('検索、またはURLを入力してください。',[['DuckDuckGo',function(){go('https://duckduckgo.com/');}],['Wikipedia(日本語)',function(){go('https://ja.wikipedia.org/');}]]);
+}catch(e){msg('起動に失敗しました: '+e.message,[['もう一度試す',start]]);}
+}
+b.querySelector('.bu').addEventListener('submit',function(e){e.preventDefault();go(inp.value);});
+b.querySelector('.bt').addEventListener('click',function(e){
+var t=e.target.closest('button');if(!t||!frame)return;
+var n=t.getAttribute('data-n');
+if(n==='b')frame.back();else if(n==='f')frame.forward();else frame.reload();
+});
+start();
+}
+function mkAbout(b){
+b.className+=' ab';
+b.innerHTML='<h1>Lacuna OS 0.12</h1><p>ブラウザの中で動くデスクトップです。ウィンドウは、移動、リサイズ、最小化、最大化、閉じるができます。</p><p>ターミナルから、ファイルとユーザー(root)を試せます。パスワードで保存データを暗号化しています。ブラウザアプリを追加しました(サーバー版のみ動きます)。次に作るもの: ブラウザアプリ。</p>';
+}
+function mkNotes(b){
+var t=document.createElement('textarea');
+t.setAttribute('aria-label','メモ');t.placeholder='ここに書きます';
+try{t.value=localStorage.getItem('lacuna.notes')||'';}catch(e){}
+t.addEventListener('input',function(){try{localStorage.setItem('lacuna.notes',t.value);}catch(e){}});
+b.appendChild(t);
+}
+function mkTerm(b){
+b.className+=' term';var HN=hostname();
+var S={user:session.user,cwd:home(session.user),stack:[]},pend=null,busy=false,hist=[],hi=0;
+var out=document.createElement('div'),hdr=document.createElement('div'),row=document.createElement('label');
+hdr.className='pr';row.className='ln';
+row.innerHTML='<span class="pr"></span><input spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="コマンド">';
+b.appendChild(out);b.appendChild(hdr);b.appendChild(row);
+var ps=row.querySelector('span'),inp=row.querySelector('input');
+function prompt(){hdr.textContent='┌──('+S.user+'㉿'+HN+')-['+short(S)+']';ps.textContent=S.user==='root'?'└─#':'└─$';}
+function print(t,c){var d=document.createElement('div');d.textContent=t;if(c)d.className=c;out.appendChild(d);b.scrollTop=b.scrollHeight;}
+function ask(q){return new Promise(function(res){pend=res;inp.type='password';ps.textContent=q;hdr.hidden=true;inp.focus();});}
+var X={S:S,ask:ask};
+print('Lacuna OS 0.12 -- help でコマンド一覧','dim');
+prompt();
+async function exec(v){
+var t=v.match(/"[^"]*"|'[^']*'|\S+/g).map(function(x){return /^["']/.test(x)?x.slice(1,-1):x;});
+var c=t.shift(),red=null,i=t.findIndex(function(x){return x==='>'||x==='>>';});
+if(i>=0){red={a:t[i]==='>>',p:t[i+1]};t.length=i;}
+if(c==='clear'){out.textContent='';return;}
+if(!CMD.hasOwnProperty(c)){print(c+': コマンドが見つかりません');return;}
+try{
+var r=await CMD[c](t,X);
+if(red){if(!red.p)throw new Error('出力先がありません');wf(red.p,(r||'')+'\n',red.a,S);r='';}
+if(r)print(r);
+}catch(e){print(c+': '+e.message);}
+}
+inp.addEventListener('keydown',function(e){
+if(!pend&&e.key==='ArrowUp'){e.preventDefault();if(hi>0)inp.value=hist[--hi];return;}
+if(!pend&&e.key==='ArrowDown'){e.preventDefault();if(hi<hist.length-1)inp.value=hist[++hi];else{hi=hist.length;inp.value='';}return;}
+if(e.key!=='Enter')return;
+if(pend){var r=pend,pw=inp.value;pend=null;inp.value='';inp.type='text';hdr.hidden=false;prompt();r(pw);return;}
+if(busy)return;
+var v=inp.value.trim();inp.value='';
+print(hdr.textContent,'pr');print(ps.textContent+' '+v);
+if(!v)return;
+hist.push(v);hi=hist.length;busy=true;
+exec(v).catch(function(){}).then(function(){busy=false;prompt();});
+});
+b.addEventListener('pointerdown',function(e){if(e.target===b||e.target===out||e.target===row)setTimeout(function(){inp.focus();});});
+}
+
+function openApp(id){
+var a=APPS[id],vw=desk.clientWidth,vh=desk.clientHeight;
+var w=Math.min(a.w,vw-12),h=Math.min(a.h,vh-PH-BH-12),n=wins.length%6;
+var el=document.createElement('section');
+el.className='win';el.setAttribute('role','dialog');el.setAttribute('aria-label',a.t);
+el.style.cssText='width:'+w+'px;height:'+h+'px;left:'+Math.max(6,Math.min(110+n*28,vw-w-6))+'px;top:'+Math.max(PH+6,Math.min(PH+10+n*28,vh-BH-h-6))+'px';
+el.innerHTML='<header class="tb">'+ICON(id,'ti')+'<span class="tt">'+a.t+'</span><button data-a="min" aria-label="最小化">'+SMIN+'</button><button data-a="max" aria-label="最大化">'+SMAX+'</button><button data-a="x" aria-label="閉じる">'+SX+'</button></header><div class="bd"></div><i class="rz"></i>';
+var win={el:el,min:false,max:false,prev:null,btn:null};
+a.mk(el.querySelector('.bd'));
+var btn=document.createElement('button');
+btn.className='tk';btn.innerHTML=I[id];btn.setAttribute('aria-label',a.t);btn.title=a.t;
+btn.addEventListener('click',function(){
+if(win.min){focus(win);}else if(cur===win){setMin(win,true);}else{focus(win);}
+});
+win.btn=btn;tasks.appendChild(btn);desk.appendChild(el);wins.push(win);
+var tb=el.querySelector('.tb');
+el.addEventListener('pointerdown',function(){focus(win);},true);
+tb.addEventListener('click',function(e){
+var b=e.target.closest('button');if(!b)return;
+var k=b.getAttribute('data-a');
+if(k==='x')close(win);else if(k==='min')setMin(win,true);else toggleMax(win);
+});
+tb.addEventListener('dblclick',function(e){if(!e.target.closest('button'))toggleMax(win);});
+drag(tb,win,'move');drag(el.querySelector('.rz'),win,'size');
+focus(win);
+}
+function focus(win){
+if(win.min)setMin(win,false);
+z++;win.el.style.zIndex=z;cur=win;
+wins.forEach(function(w){var on=w===win;w.el.classList.toggle('act',on);w.btn.classList.toggle('on',on);});
+}
+function setMin(win,m){
+win.min=m;win.btn.classList.toggle('min',m);
+if(m){
+win.el.classList.remove('act');win.btn.classList.remove('on');if(cur===win)cur=null;
+win.el.classList.add('mn');
+setTimeout(function(){if(win.min)win.el.hidden=true;win.el.classList.remove('mn');},RM?0:180);
+}else{
+win.el.hidden=false;win.el.classList.remove('mn');win.el.classList.add('rs');
+setTimeout(function(){win.el.classList.remove('rs');},230);
+}
+}
+function close(win){
+wins=wins.filter(function(w){return w!==win;});
+win.btn.remove();if(cur===win)cur=null;
+win.el.classList.add('out');
+setTimeout(function(){win.el.remove();},RM?0:160);
+}
+function toggleMax(win){
+var el=win.el;el.classList.add('tr');setTimeout(function(){el.classList.remove('tr');},280);
+if(win.max){Object.assign(el.style,win.prev);win.max=false;el.classList.remove('max');}
+else{win.prev={left:el.style.left,top:el.style.top,width:el.style.width,height:el.style.height};
+Object.assign(el.style,{left:'0px',top:PH+'px',width:'100%',height:'calc(100% - '+BH+'px)'});
+win.max=true;el.classList.add('max');}
+var bm=el.querySelector('[data-a=max]');bm.innerHTML=win.max?SRS:SMAX;bm.setAttribute('aria-label',win.max?'元に戻す':'最大化');
+}
+function drag(h,win,mode){
+h.addEventListener('pointerdown',function(e){
+if(e.target.closest('button')||win.max)return;
+var el=win.el,sx=e.clientX,sy=e.clientY,x0=el.offsetLeft,y0=el.offsetTop,w0=el.offsetWidth,h0=el.offsetHeight,vw=desk.clientWidth,vh=desk.clientHeight;
+h.setPointerCapture(e.pointerId);
+function mv(ev){
+var dx=ev.clientX-sx,dy=ev.clientY-sy;
+if(mode==='move'){
+el.style.left=Math.max(60-w0,Math.min(x0+dx,vw-60))+'px';
+el.style.top=Math.max(PH,Math.min(y0+dy,vh-BH-40))+'px';
+}else{
+el.style.width=Math.max(260,Math.min(w0+dx,vw-x0))+'px';
+el.style.height=Math.max(160,Math.min(h0+dy,vh-y0))+'px';
+}
+}
+function up(){h.removeEventListener('pointermove',mv);h.removeEventListener('pointerup',up);h.removeEventListener('pointercancel',up);}
+h.addEventListener('pointermove',mv);h.addEventListener('pointerup',up);h.addEventListener('pointercancel',up);
+});
+}
+
+var icons=document.getElementById('icons'),who=document.getElementById('who'),bootEl=document.getElementById('boot');
+var ALLOW={normal:null,safe:['term','about'],recovery:['term']};
+var RM=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+var LOGO_SRC='assets/logo.svg',LOGO='<img src="'+LOGO_SRC+'" width="56" height="56" alt="">';
+function sl(ms){return new Promise(function(r){setTimeout(r,ms);});}
+function hideMenu(){menu.hidden=true;mb.setAttribute('aria-expanded','false');var f=menu.querySelector('.fly');if(f)f.hidden=true;}
+function buildLaunchers(){
+icons.innerHTML='';
+menu.innerHTML='<input class="ms" type="search" placeholder="アプリを検索" aria-label="アプリを検索"><div class="mh"><b>ピン留め済み</b></div><div class="mg"></div><div class="mf"><span class="mu"><span class="av2"></span><span class="un"></span></span><span class="pw2"><button type="button" class="pb" aria-label="電源" aria-expanded="false"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M9 2v6M5 4.5a6 6 0 1 0 8 0"/></svg></button><div class="fly" hidden><button type="button" data-x="lo">ログアウト</button><button type="button" data-x="rb">再起動</button></div></span></div>';
+var al=ALLOW[session.mode],mg=menu.querySelector('.mg');
+Object.keys(APPS).forEach(function(id){
+if(al&&al.indexOf(id)<0)return;
+var ic=document.createElement('button');
+ic.className='ic';ic.innerHTML='<span class="g">'+I[id]+'</span>'+APPS[id].t;
+ic.addEventListener('click',function(){openApp(id);});
+icons.appendChild(ic);
+var m=document.createElement('button');
+m.type='button';m.setAttribute('data-n',APPS[id].t);m.innerHTML=I[id]+APPS[id].t;
+m.addEventListener('click',function(){hideMenu();openApp(id);});
+mg.appendChild(m);
+});
+menu.querySelector('.un').textContent=session.user;menu.querySelector('.av2').textContent=session.user.charAt(0).toUpperCase();var pb=menu.querySelector('.pb'),fl=menu.querySelector('.fly');pb.addEventListener('click',function(){fl.hidden=!fl.hidden;pb.setAttribute('aria-expanded',String(!fl.hidden));});
+menu.querySelector('.ms').addEventListener('input',function(e){var q=e.target.value.toLowerCase();mg.querySelectorAll('button').forEach(function(x){x.hidden=x.getAttribute('data-n').toLowerCase().indexOf(q)<0;});});
+menu.querySelector('[data-x=lo]').addEventListener('click',function(){hideMenu();logout();});
+menu.querySelector('[data-x=rb]').addEventListener('click',function(){hideMenu();reboot();});
+}
+function closeAll(){wins.slice().forEach(close);menu.hidden=true;}
+function startDesktop(){
+bootEl.hidden=true;closeAll();idle();desk.classList.remove('boot-in');void desk.offsetWidth;desk.classList.add('boot-in');
+desk.classList.toggle('safe',session.mode==='safe');desk.classList.toggle('rec',session.mode==='recovery');
+who.textContent=session.user+(session.mode==='safe'?' / Safe mode':session.mode==='recovery'?' / Recovery':'');
+who.classList.toggle('root',session.user==='root');
+applyPrefs(session.mode==='safe'?PD:loadPrefs());buildLaunchers();openApp('term');
+if(session.mode==='recovery')toggleMax(cur);
+}
+async function logout(){closeAll();applyPrefs(PD);bootEl.hidden=false;bootEl.innerHTML='';await lockMem();lock();}
+async function reboot(){closeAll();applyPrefs(PD);await lockMem();power();}
+function bootReset(){
+bootEl.innerHTML='<div class="bx">'+LOGO+'<h1>初期化</h1><p>すべてのファイルとパスワードを消します。パスワードを忘れた時の最終手段です。</p><button id="rs" type="button">すべて消して初期設定へ</button><button id="rb" type="button">戻る</button></div>';
+document.getElementById('rb').addEventListener('click',bootMenu);
+document.getElementById('rs').addEventListener('click',async function(){await kvClear();meta=null;fs=null;dk=null;dkRaw=null;setup();});
+}
+function pwf(id,l){return '<label class="pw"><span>'+l+'</span><input type="password" id="'+id+'" autocomplete="new-password"></label>';}
+function setup(){
+bootEl.hidden=false;
+var W={host:'lacuna',theme:'auto',acc:PD.acc,wp:'aurora',r:'',u:''},st=0,hel=null,STEPS=['hello','name','look','pw','done'];
+applyPrefs(W);
+function dots(){return '<div class="dots" aria-hidden="true">'+STEPS.slice(0,4).map(function(x,i){return '<i'+(i===st?' class="on"':'')+'></i>';}).join('')+'</div>';}
+function nav(back,lbl){return '<div class="nv">'+(back?'<button type="button" data-g="b">戻る</button>':'')+'<button type="submit">'+lbl+'</button></div>';}
+function pr(v,c){return ' aria-pressed="'+(v===c)+'"';}
+function view(nf){
+clearInterval(hel);
+var s=STEPS[st],h='';
+if(s==='hello')h=LOGO.replace('width="56" height="56"','width="88" height="88"')+'<h1 id="hl">こんにちは</h1><p>Lacuna OS のセットアップを始めます。</p>'+nav(false,'はじめる');
+else if(s==='name')h='<h1>デバイスに名前をつけます</h1><p>ターミナルの表示などに使われます。</p><label class="pw"><span>デバイス名</span><input id="hn" value="'+W.host+'" maxlength="20" autocomplete="off" autocapitalize="off" spellcheck="false"></label>'+nav(true,'次へ');
+else if(s==='look')h='<h1>見た目を選びます</h1><div class="cards">'+[['dark','ダーク'],['light','ライト'],['auto','自動']].map(function(x){return '<button type="button" class="cd" data-th="'+x[0]+'"'+pr(W.theme,x[0])+'>'+x[1]+'</button>';}).join('')+'</div><div class="sw">'+ACC.map(function(c){return '<button type="button" data-c="'+c[1]+'" aria-label="'+c[0]+'"'+pr(W.acc,c[1])+' style="background:'+c[1]+'"></button>';}).join('')+'</div><div class="cards">'+[['aurora','オーロラ'],['dusk','夕焼け'],['forest','森'],['paper','紙']].map(function(x){return '<button type="button" class="cd wpb" data-wp="'+x[0]+'" aria-label="'+x[1]+'"'+pr(W.wp,x[0])+' style="background-image:var(--wp-'+x[0]+')"></button>';}).join('')+'</div>'+nav(true,'次へ');
+else if(s==='pw')h='<h1>パスワードを決めます</h1><p>8文字以上。忘れると、保存したデータは復元できません。</p>'+pwf('r1','rootのパスワード')+pwf('r2','rootのパスワード(もう一度)')+pwf('u1','userのパスワード')+pwf('u2','userのパスワード(もう一度)')+nav(true,'セットアップを完了');
+else h='<div class="spin" role="status" aria-label="準備中"></div><h1>準備しています</h1><p id="wm">しばらくお待ちください</p><div class="prog"><i id="wp2"></i></div>';
+bootEl.innerHTML='<form class="bx oobe'+(nf?' nf':'')+'" id="wf">'+(s==='done'?'':dots())+h+'<p id="we" role="alert"></p></form>';
+var f=document.getElementById('wf');
+if(s==='hello'){var G=['こんにちは','Hello','Bonjour','Hola','안녕하세요','你好','Ciao'],gi=0;hel=setInterval(function(){gi=(gi+1)%G.length;var e=document.getElementById('hl');if(e){e.textContent=G[gi];e.classList.remove('fd');void e.offsetWidth;e.classList.add('fd');}},1400);}
+f.addEventListener('click',function(e){
+var b=e.target.closest('button');if(!b)return;
+if(b.getAttribute('data-g')==='b'){st--;view();return;}
+var th=b.getAttribute('data-th'),c=b.getAttribute('data-c'),wp=b.getAttribute('data-wp');
+if(th||c||wp){if(th)W.theme=th;if(c)W.acc=c;if(wp)W.wp=wp;applyPrefs(W);view(true);}
+});
+f.addEventListener('submit',function(e){
+e.preventDefault();
+var er=document.getElementById('we');
+if(s==='name'){var v=document.getElementById('hn').value.trim().toLowerCase();if(!/^[a-z0-9-]{1,20}$/.test(v)){er.textContent='英小文字、数字、ハイフンで、20文字までにしてください';return;}W.host=v;}
+if(s==='pw'){
+var r=document.getElementById('r1').value,u=document.getElementById('u1').value;
+if(r.length<8||u.length<8){er.textContent='8文字以上にしてください';return;}
+if(r!==document.getElementById('r2').value||u!==document.getElementById('u2').value){er.textContent='確認用のパスワードが一致しません';return;}
+if(r===u){er.textContent='rootとuserは、別のパスワードにしてください';return;}
+W.r=r;W.u=u;
+}
+st++;view();if(STEPS[st]==='done')finish();
+});
+}
+async function finish(){
+var T=['アカウントを作成しています','暗号化の鍵を作っています','ファイルシステムを準備しています','設定を保存しています'];
+function mark(i){var m=document.getElementById('wm'),p=document.getElementById('wp2');if(m)m.textContent=T[i];if(p)p.style.width=((i+1)/T.length*100)+'%';}
+try{
+mark(0);await kvClear();dkRaw=crypto.getRandomValues(new Uint8Array(32));dk=await importDk(dkRaw);
+mark(1);meta={v:2,slots:{root:await mkSlot(W.r,dkRaw),user:await mkSlot(W.u,dkRaw)}};
+mark(2);fs=seed();fs.k.etc.k.hostname.c=W.host+'\n';
+mark(3);session.user='user';session.mode='normal';savePrefs({theme:W.theme,acc:W.acc,wp:W.wp});await persist();
+await sl(RM?0:500);
+bootEl.innerHTML='<div class="bx">'+LOGO+'<h1>ようこそ</h1><p>準備ができました。</p></div>';
+await sl(RM?0:1000);
+startDesktop();
+}catch(x){st=3;view();document.getElementById('we').textContent='設定に失敗しました: '+x.message;}
+}
+view();
+}
+function lock(){
+bootEl.hidden=false;
+function tm(){var d=new Date();return '<div class="lt">'+d.toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'})+'</div><div class="ld">'+d.toLocaleDateString('ja-JP',{month:'long',day:'numeric',weekday:'long'})+'</div>';}
+bootEl.innerHTML='<div class="lk" id="lk" tabindex="0" role="button" aria-label="ロック解除"><span id="lc">'+tm()+'</span><p>クリック、またはキーを押してログイン</p></div>';
+var el=document.getElementById('lk'),t=setInterval(function(){var c=document.getElementById('lc');if(c)c.innerHTML=tm();else clearInterval(t);},1000);
+function go(){clearInterval(t);document.removeEventListener('keydown',go);el.classList.add('up');setTimeout(login,RM?0:280);}
+el.addEventListener('click',go);document.addEventListener('keydown',go);
+el.focus();
+}
+function UD(){return{order:['normal','safe','recovery'],menu:true,timeout:0,quiet:true,fast:false,sb:false,sbHash:'',idle:10,pw:null};}
+var uefi=UD();
+var uefiReady=(async function(){var u=await kvGet('uefi');if(u)uefi=Object.assign(UD(),u);})();
+var LB={normal:'Lacuna OS',safe:'Lacuna OS (Safe mode)',recovery:'Recovery(rootのターミナルのみ)'};
+async function pbk(pw,salt){var m=await crypto.subtle.importKey('raw',enc.encode(pw),'PBKDF2',false,['deriveBits']);return b64(new Uint8Array(await crypto.subtle.deriveBits({name:'PBKDF2',salt:salt,iterations:300000,hash:'SHA-256'},m,256)));}
+async function imageHash(){var el=document.getElementById('lacuna-js');return b64(new Uint8Array(await crypto.subtle.digest('SHA-256',enc.encode(el?el.textContent:''))));}
+async function power(){
+await Promise.all([metaReady,uefiReady]);
+bootEl.hidden=false;
+bootEl.innerHTML='<div class="bx">'+LOGO+'<h1>Lacuna UEFI</h1><div class="spin" role="status" aria-label="起動中"></div><button id="ue" type="button">UEFI設定(Delキー)</button></div>';
+var ms=RM?800:(uefi.fast?700:2000);
+var c=await new Promise(function(res){
+var t=setTimeout(function(){done('boot');},ms);
+function kd(e){if(e.key==='Delete'||e.key==='F2'){e.preventDefault();done('uefi');}}
+function done(v){clearTimeout(t);document.removeEventListener('keydown',kd);res(v);}
+document.addEventListener('keydown',kd);
+document.getElementById('ue').addEventListener('click',function(){done('uefi');});
+});
+if(c==='uefi'){enterUefi();return;}
+if(!uefi.menu){boot(uefi.order[0]);return;}
+bootMenu();
+}
+function bootMenu(){
+bootEl.hidden=false;
+bootEl.innerHTML='<div class="bx">'+LOGO+'<h1>Boot Manager</h1><p id="bc">起動方法を選んでください</p>'+uefi.order.map(function(k,i){return '<button data-m="'+k+'">'+LB[k]+(i?'':'(既定)')+'</button>';}).join('')+'<button data-m="reset">初期化して起動</button><button data-m="uefi">UEFI設定</button></div>';
+var bc=document.getElementById('bc'),n=uefi.timeout,t=null;
+function stop(){clearInterval(t);bc.textContent='起動方法を選んでください';}
+bootEl.querySelectorAll('button').forEach(function(b){b.addEventListener('click',function(){stop();var m=b.getAttribute('data-m');if(m==='uefi')enterUefi();else boot(m);});});
+if(n>0){
+var tk=function(){if(n<=0){clearInterval(t);boot(uefi.order[0]);return;}bc.textContent=n+'秒後に既定('+LB[uefi.order[0]]+')を起動します';n--;};
+tk();t=setInterval(tk,1000);
+bootEl.addEventListener('pointerdown',stop,{once:true});
+}
+}
+function enterUefi(){if(!uefi.pw)uefiScreen();else uefiAuth();}
+function uefiAuth(){
+bootEl.hidden=false;
+bootEl.innerHTML='<form class="bx" id="af">'+LOGO+'<h1>UEFI設定</h1><label class="pw"><span>管理者パスワード</span><input type="password" id="ap" autocomplete="off"></label><p id="ae" role="alert"></p><button type="submit">解除する</button><button type="button" id="ac">パスワードを忘れた(CMOSクリア)</button><button type="button" id="ab">戻る</button></form>';
+var ap=document.getElementById('ap'),ae=document.getElementById('ae'),armed=false;
+document.getElementById('ab').addEventListener('click',power);
+document.getElementById('ac').addEventListener('click',async function(){
+if(!armed){armed=true;this.textContent='もう一度押すと、UEFI設定を初期化します(OSのデータは消えません)';return;}
+uefi=UD();await kvSet('uefi',uefi);power();
+});
+document.getElementById('af').addEventListener('submit',async function(e){
+e.preventDefault();ae.textContent='確認中...';
+var h=await pbk(ap.value,unb64(uefi.pw.salt));
+if(h===uefi.pw.h){uefiScreen();}else{await sl(1000);ae.textContent='パスワードが違います';ap.value='';}
+});
+ap.focus();
+}
+async function uefiScreen(){
+var D=JSON.parse(JSON.stringify(uefi)),tab='main',msg='',est=null;
+try{est=await navigator.storage.estimate();}catch(e){}
+function fmt(x){return x>=1e9?(x/1e9).toFixed(1)+' GB':(x/1e6).toFixed(1)+' MB';}
+var TB=[['main','メイン'],['boot','起動'],['sec','セキュリティ'],['adv','詳細']];
+function chk(k,l){return '<label class="rw"><span>'+l+'</span><input type="checkbox" data-k="'+k+'"'+(D[k]?' checked':'')+'></label>';}
+function sel(k,l,o){return '<label class="rw"><span>'+l+'</span><select data-k="'+k+'">'+o.map(function(x){return '<option value="'+x[0]+'"'+(String(D[k])===String(x[0])?' selected':'')+'>'+x[1]+'</option>';}).join('')+'</select></label>';}
+function panel(){
+if(tab==='main'){
+var info=[['ファームウェア','Lacuna UEFI 1.0'],['プラットフォーム',navigator.platform||'不明'],['CPUコア',navigator.hardwareConcurrency||'不明'],['メモリ(目安)',navigator.deviceMemory?navigator.deviceMemory+' GB以上':'不明'],['画面',screen.width+' x '+screen.height],['ストレージ',est?fmt(est.usage)+' / '+fmt(est.quota):'不明'],['セキュア接続',window.isSecureContext?'はい':'いいえ'],['日時',new Date().toLocaleString('ja-JP')]];
+return info.map(function(r){return '<div class="rw"><span>'+r[0]+'</span><b>'+r[1]+'</b></div>';}).join('');
+}
+if(tab==='boot'){
+return '<p class="dim">上にあるものが、既定の起動方法です。</p>'+D.order.map(function(k,i){return '<div class="rw"><span>'+(i+1)+'. '+LB[k]+'</span><span><button data-a="up" data-i="'+i+'" aria-label="上へ">↑</button> <button data-a="dn" data-i="'+i+'" aria-label="下へ">↓</button></span></div>';}).join('')+chk('menu','起動時にブートメニューを表示')+sel('timeout','自動起動までの秒数(0は待機)',[[0,'0'],[3,'3'],[5,'5'],[10,'10']])+chk('quiet','Quiet boot(起動ログを隠す)')+chk('fast','Fast boot(待ち時間を省く)');
+}
+if(tab==='sec'){
+return '<div class="rw"><span>管理者パスワード</span><b>'+(D.pw?'設定済み':'未設定')+'</b></div>'+pwf('n1','新しいパスワード(8文字以上)')+pwf('n2','もう一度')+'<div class="rw"><button data-a="pws">設定</button><button data-a="pwc">解除</button></div>'+chk('sb','Secure Boot(OSイメージの検証)')+'<p class="dim">ONにした時点のOSイメージを登録します。Lacuna OSを更新したら、再登録が必要です。</p>';
+}
+return sel('idle','自動ログアウト(分)',[[5,'5'],[10,'10'],[30,'30'],[0,'なし']]);
+}
+function draw(){
+bootEl.innerHTML='<div class="ue"><h1>Lacuna UEFI</h1><div class="tabs" role="tablist">'+TB.map(function(t){return '<button role="tab" aria-selected="'+(t[0]===tab)+'" data-t="'+t[0]+'"'+(t[0]===tab?' class="on"':'')+'>'+t[1]+'</button>';}).join('')+'</div><div class="up">'+panel()+'</div><p id="um" role="status">'+msg+'</p><div class="uf"><button data-a="def">初期設定</button><button data-a="dis">破棄して終了</button><button data-a="sav" class="pri">保存して終了</button></div></div>';
+var root=bootEl.firstChild;
+root.addEventListener('click',onClick);root.addEventListener('change',onChange);
+}
+async function onClick(e){
+var b=e.target.closest('button');if(!b)return;
+var t=b.getAttribute('data-t'),a=b.getAttribute('data-a'),i=+b.getAttribute('data-i');
+if(t){tab=t;msg='';draw();return;}
+if(a==='up'&&i>0){D.order.splice(i-1,0,D.order.splice(i,1)[0]);}
+else if(a==='dn'&&i<D.order.length-1){D.order.splice(i+1,0,D.order.splice(i,1)[0]);}
+else if(a==='pws'){
+var n1=document.getElementById('n1').value,n2=document.getElementById('n2').value;
+if(n1.length<8)msg='8文字以上にしてください';
+else if(n1!==n2)msg='確認用のパスワードが一致しません';
+else{var salt=crypto.getRandomValues(new Uint8Array(16));D.pw={salt:b64(salt),h:await pbk(n1,salt)};msg='パスワードを設定しました(保存して終了で反映されます)';}
+}
+else if(a==='pwc'){D.pw=null;msg='パスワードを解除しました(保存して終了で反映されます)';}
+else if(a==='def'){var k=D.pw;D=UD();D.pw=k;msg='初期設定を読み込みました(パスワードはそのままです)';}
+else if(a==='dis'){power();return;}
+else if(a==='sav'){uefi=D;await kvSet('uefi',uefi);power();return;}
+else return;
+draw();
+}
+async function onChange(e){
+var k=e.target.getAttribute('data-k');if(!k)return;
+D[k]=e.target.type==='checkbox'?e.target.checked:Number(e.target.value);
+if(k==='sb'){D.sbHash=D.sb?await imageHash():'';msg=D.sb?'現在のOSイメージを登録しました':'Secure Bootを無効にしました';}
+draw();
+}
+draw();
+}
+async function boot(m){
+if(m==='reset'){bootReset();return;}
+session.mode=m;
+if(uefi.sb&&(await imageHash())!==uefi.sbHash){
+bootEl.innerHTML='<div class="bx">'+LOGO+'<h1>Secure Boot 違反</h1><p>OSイメージが、登録されたものと違います。UEFI設定で、現在のイメージを登録し直してください。</p><button id="v1" type="button">UEFI設定へ</button><button id="v2" type="button">電源を入れ直す</button></div>';
+document.getElementById('v1').addEventListener('click',enterUefi);
+document.getElementById('v2').addEventListener('click',power);
+return;
+}
+var fast=RM||uefi.fast;
+if(uefi.quiet){
+bootEl.innerHTML='<div class="bx">'+LOGO+'<div class="spin" role="status" aria-label="起動中"></div></div>';
+await metaReady;await sl(fast?0:400);
+}else{
+bootEl.innerHTML='<div class="bx blog" id="bl"></div>';
+var bl=document.getElementById('bl');
+var L=[['ok','カーネルを起動しています'],['ok','ファイルシステムを確認しています'],['ok','ユーザー情報を確認しています']];
+if(m==='safe')L.push(['warn','Safe mode: 壁紙と追加アプリを読み込みません']);
+if(m==='recovery')L.push(['warn','Recovery: rootのパスワードが必要です']);
+if(uefi.sb)L.push(['ok','Secure Boot: OSイメージを検証しました']);
+L.push(['ok','ログイン画面を準備しています']);
+for(var i=0;i<L.length;i++){
+var d=document.createElement('div');
+d.className=L[i][0];d.textContent=(L[i][0]==='ok'?'[ OK ] ':'[ !! ] ')+L[i][1];
+bl.appendChild(d);
+if(i===1)await metaReady;
+await sl(fast?0:160);
+}
+}
+if(!meta)setup();else if(m==='recovery')login();else lock();
+}
+function login(){
+bootEl.hidden=false;
+var rec=session.mode==='recovery';
+bootEl.innerHTML='<form class="bx" id="lf">'+LOGO+'<h1>'+(rec?'Recovery: rootでログイン':'ログイン')+'</h1><div class="seg" role="radiogroup" aria-label="ユーザー">'+(rec?'':'<label><input type="radio" name="u" value="user" checked><span class="av">U</span>user</label>')+'<label><input type="radio" name="u" value="root"'+(rec?' checked':'')+'><span class="av">R</span>root</label></div><label class="pw"><span>パスワード</span><input type="password" id="lp" autocomplete="off"></label><p id="le" role="alert"></p><button type="submit">ログイン</button><button type="button" id="lb">起動メニューに戻る</button></form>';
+var pw=document.getElementById('lp'),le=document.getElementById('le');
+document.getElementById('lb').addEventListener('click',bootMenu);
+document.getElementById('lf').addEventListener('submit',async function(e){
+e.preventDefault();
+var u=bootEl.querySelector('input[name=u]:checked').value;
+le.textContent='確認中...';
+try{
+var raw=await verify(u,pw.value);
+if(!raw){le.textContent='ユーザーまたはパスワードが違います';pw.value='';pw.focus();return;}
+dkRaw=raw;dk=await importDk(raw);await loadFs();
+session.user=u;pw.value='';startDesktop();
+}catch(x){le.textContent=x.message;pw.value='';}
+});
+pw.focus();
+}
+var idleT=null;
+function idle(){clearTimeout(idleT);var m=uefi.idle;if(bootEl.hidden&&m)idleT=setTimeout(function(){if(bootEl.hidden)logout();},m*60000);}
+['pointerdown','keydown'].forEach(function(ev){document.addEventListener(ev,idle,true);});
+mb.addEventListener('click',function(){var f0=menu.querySelector('.fly');if(f0)f0.hidden=true;menu.hidden=!menu.hidden;mb.setAttribute('aria-expanded',String(!menu.hidden));});
+document.addEventListener('pointerdown',function(e){if(!e.target.closest('#menu,#mb')){menu.hidden=true;mb.setAttribute('aria-expanded','false');}});
+function tick(){document.getElementById('clk').textContent=new Date().toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'});}
+tick();setInterval(tick,15000);
+power();
+})();
+</script>
+</body>
+</html>
