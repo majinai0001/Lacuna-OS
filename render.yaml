@@ -11,3 +11,7 @@ services:
         sync: false
       - key: SESSION_SECRET
         generateValue: true
+      - key: PROXY_PREFIX
+        value: /~/
+      - key: PROXY_CODEC
+        value: xor
