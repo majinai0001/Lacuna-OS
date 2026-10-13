@@ -438,6 +438,8 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 .edb{display:flex;align-items:center;gap:10px;padding:6px 8px;border-bottom:1px solid var(--line);flex:none}
 .eds{color:var(--mute);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .edt{flex:1;min-height:0;width:100%;box-sizing:border-box;padding:12px;border:0;outline:0;resize:none;background:transparent;color:var(--text);font:13px/1.7 "JetBrains Mono","Zen Maru Gothic",monospace}
+.dg{color:#f87171!important}
+.pnb{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);min-height:36px;padding:0 14px;border:1px solid var(--cb);border-radius:4px;background:var(--ctl);color:#f87171;font:inherit;font-size:12px;cursor:pointer}
 </style>
 
 
@@ -479,12 +481,12 @@ settings:{t:'設定',w:440,h:460,mk:mkSettings},
 about:{t:'Lacuna OSについて',w:380,h:250,mk:mkAbout}};
 
 var fs=null,stt=null;
-function idb(){return new Promise(function(res,rej){var r=indexedDB.open('lacuna',1);r.onupgradeneeded=function(){r.result.createObjectStore('kv');};r.onsuccess=function(){res(r.result);};r.onerror=function(){rej(r.error);};});}
+function idb(){return new Promise(function(res,rej){var r=indexedDB.open('lacuna',1);r.onupgradeneeded=function(){r.result.createObjectStore('kv');};r.onsuccess=function(){r.result.onversionchange=function(){r.result.close();};res(r.result);};r.onerror=function(){rej(r.error);};});}
 function kvGet(k){return idb().then(function(db){return new Promise(function(res){var q=db.transaction('kv').objectStore('kv').get(k);q.onsuccess=function(){res(q.result);};q.onerror=function(){res(undefined);};});}).catch(function(){return undefined;});}
 function kvSet(k,v){return idb().then(function(db){return new Promise(function(res){var t=db.transaction('kv','readwrite');t.objectStore('kv').put(v,k);t.oncomplete=function(){res();};t.onerror=function(){res();};});}).catch(function(){});}
 function D(o,m,k){return{t:'d',o:o,m:m,k:k||{}};}
 function F(o,m,c){return{t:'f',o:o,m:m,c:c};}
-function seed(){return D('root','755',{etc:D('root','755',{hostname:F('root','644','lacuna\n'),motd:F('root','644','Lacuna OS 0.16\n')}),home:D('root','755',{user:D('user','755',{'readme.txt':F('user','644','Lacuna OSへようこそ。\n')})}),root:D('root','700',{'secret.txt':F('root','600','rootだけが読めるファイルです。\n')}),tmp:D('root','777')});}
+function seed(){return D('root','755',{etc:D('root','755',{hostname:F('root','644','lacuna\n'),motd:F('root','644','Lacuna OS 0.20\n')}),home:D('root','755',{user:D('user','755',{'readme.txt':F('user','644','Lacuna OSへようこそ。\n')})}),root:D('root','700',{'secret.txt':F('root','600','rootだけが読めるファイルです。\n')}),tmp:D('root','777')});}
 function kvClear(){return idb().then(function(db){return new Promise(function(res){var t=db.transaction('kv','readwrite');t.objectStore('kv').clear();t.oncomplete=function(){res();};t.onerror=function(){res();};});}).catch(function(){});}
 var ITER=600000,enc=new TextEncoder(),dec=new TextDecoder(),dk=null,dkRaw=null,meta=null;
 var metaReady=(async function(){meta=await kvGet('meta');})();
@@ -518,7 +520,7 @@ help:function(){return 'help pwd ls cd cat echo mkdir touch rm chmod\nwhoami id 
 pwd:function(a,X){return X.S.cwd;},
 echo:function(a){return a.join(' ');},
 date:function(){return new Date().toString();},
-uname:function(){return 'Lacuna OS 0.16 (browser)';},
+uname:function(){return 'Lacuna OS 0.20 (browser)';},
 whoami:function(a,X){return X.S.user;},
 id:function(a,X){return X.S.user==='root'?'uid=0(root) gid=0(root)':'uid=1000('+X.S.user+') gid=1000('+X.S.user+')';},
 open:function(a){if(APPS[a[0]]&&!APPS[a[0]].hid){openApp(a[0]);return a[0]+' を開きました';}return '使い方: open browser | files | term | notes | settings | about';},
@@ -550,7 +552,7 @@ function savePrefs(p){var S={user:session.user,cwd:'/',stack:[]},n=fs;norm('~/.c
 function hostname(){try{var n=find('/etc/hostname',{user:'root',cwd:'/',stack:[]});return (n&&n.t==='f'&&n.c.trim())||'lacuna';}catch(e){return 'lacuna';}}
 function mkSettings(b){
 b.className+=' st';
-var tab='look',p=loadPrefs(),msg='',armed=false;
+var tab='look',p=loadPrefs(),msg='',armed=false,armedP=false;
 var TBS=[['look','外観'],['acc','アカウント'],['sys','システム']];
 function opt(v,l,cur){return '<option value="'+v+'"'+(cur===v?' selected':'')+'>'+l+'</option>';}
 function draw(){
@@ -567,7 +569,8 @@ h+='<p class="dim">'+(root?'rootは、他のユーザーのパスワードも変
 if(root)h+='<label class="r2"><span>対象</span><select id="tg"><option value="root">root</option><option value="user">user</option></select></label>';
 h+='<label class="pw" id="cw"><span>現在のパスワード</span><input type="password" id="cp" autocomplete="off"></label><label class="pw"><span>新しいパスワード(8文字以上)</span><input type="password" id="n1" autocomplete="new-password"></label><label class="pw"><span>もう一度</span><input type="password" id="n2" autocomplete="new-password"></label><button class="sb pri" data-a="pw" style="min-height:46px;border-radius:8px">変更する</button>';
 }else{
-h+=[['バージョン','Lacuna OS 0.16'],['ユーザー',session.user],['暗号化','AES-GCM / PBKDF2 60万回'],['自動ログアウト',uefi.idle?uefi.idle+'分(UEFIで変更)':'なし(UEFIで変更)'],['Secure Boot',uefi.sb?'ON':'OFF']].map(function(r){return '<div class="r2"><span>'+r[0]+'</span><b>'+r[1]+'</b></div>';}).join('');
+h+=[['バージョン','Lacuna OS 0.20'],['ユーザー',session.user],['暗号化','AES-GCM / PBKDF2 60万回'],['自動ログアウト',uefi.idle?uefi.idle+'分(UEFIで変更)':'なし(UEFIで変更)'],['Secure Boot',uefi.sb?'ON':'OFF']].map(function(r){return '<div class="r2"><span>'+r[0]+'</span><b>'+r[1]+'</b></div>';}).join('');
+h+='<button class="sb dg" data-a="pn" style="min-height:46px">'+(armedP?'もう一度押すと、すべて消します':'緊急消去(保存データとログインを消す)')+'</button>';
 if(session.user==='root')h+='<button class="sb" data-a="rs" style="min-height:46px">'+(armed?'もう一度押すと、すべて消します':'すべて初期化(rootのみ)')+'</button>';
 }
 b.innerHTML=h+'<p id="sm" role="status">'+msg+'</p></div>';
@@ -578,6 +581,7 @@ var t=e.target.closest('button');if(!t)return;
 var tb=t.getAttribute('data-t'),c=t.getAttribute('data-c'),a=t.getAttribute('data-a');
 if(tb){tab=tb;msg='';armed=false;draw();return;}
 if(c){p.acc=c;applyPrefs(p);savePrefs(p);draw();return;}
+if(a==='pn'){if(!armedP){armedP=true;draw();return;}panic();return;}
 if(a==='rs'){if(!armed){armed=true;draw();return;}await CMD.reset([],{S:{user:'root',cwd:'/',stack:[]}});return;}
 if(a==='pw'){
 try{
@@ -618,12 +622,12 @@ if(proxyP)return proxyP;
 proxyP=(async function(){
 if(window.__LTEST){scram=window.__LTEST;return;}
 if(!('serviceWorker' in navigator))throw new Error('このブラウザは、Service Workerに対応していません');
-await loadScript('/baremux/index.js');await loadScript('/scram/scramjet.all.js');
+await loadScript('/proxy-config.js');await loadScript('/baremux/index.js');await loadScript('/scram/scramjet.all.js');
 await navigator.serviceWorker.register('/sw.js',{scope:'/'});
 await navigator.serviceWorker.ready;
 await healScramDb();
 var C=$scramjetLoadController().ScramjetController;
-scram=new C({files:{wasm:'/scram/scramjet.wasm.wasm',all:'/scram/scramjet.all.js',sync:'/scram/scramjet.sync.js'}});
+scram=new C({prefix:self.__PROXY.prefix,codec:self.__PROXY.codec,files:{wasm:'/scram/scramjet.wasm.wasm',all:'/scram/scramjet.all.js',sync:'/scram/scramjet.sync.js'}});
 await scram.init();
 var conn=new BareMux.BareMuxConnection('/baremux/worker.js');
 await conn.setTransport('/libcurl/index.mjs',[{websocket:(location.protocol==='https:'?'wss://':'ws://')+location.host+'/wisp/'}]);
@@ -638,7 +642,7 @@ function cfgRead(n,def){try{var f=find('~/.config/'+n+'.json',{user:session.user
 function cfgWrite(n,o){var S={user:session.user,cwd:'/',stack:[]},d=fs;norm('~/.config',S).forEach(function(x){if(!d.k[x])d.k[x]=D(S.user,'755');d=d.k[x];});wf('~/.config/'+n+'.json',JSON.stringify(o),false,S);}
 function mkBrowser(b){
 b.className+=' br';
-var BP=cfgRead('browser',{home:'lacuna://newtab',shields:true,dev:false,bm:[],hist:[]});
+var BP=cfgRead('browser',{home:'lacuna://newtab',shields:true,dev:false,keepHist:false,bm:[],hist:[]});
 var tabs=[],cur=null,ready=false,blocked=0,net=[],logs=[],tid=0,dtab='con',drawQ=false;
 function sv(p){return '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+p+'</svg>';}
 var IC={back:sv('<path d="M10 3L5 8l5 5"/>'),fwd:sv('<path d="M6 3l5 5-5 5"/>'),rel:sv('<path d="M13 8a5 5 0 1 1-1.8-3.8M13 2.5V5h-2.5"/>'),home:sv('<path d="M2.5 8L8 3l5.5 5M4 7v6h8V7"/>'),lock:sv('<rect x="3.5" y="7" width="9" height="6.5" rx="1.5"/><path d="M5.5 7V5.5a2.5 2.5 0 0 1 5 0V7"/>'),info:sv('<circle cx="8" cy="8" r="5.5"/><path d="M8 7.5v3.2M8 5.4h.01"/>'),star:sv('<path d="M8 2.2l1.8 3.7 4 .6-2.9 2.8.7 4L8 11.4 4.4 13.3l.7-4L2.2 6.5l4-.6z"/>'),starf:'<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 2.2l1.8 3.7 4 .6-2.9 2.8.7 4L8 11.4 4.4 13.3l.7-4L2.2 6.5l4-.6z"/></svg>',shield:sv('<path d="M8 1.8l5 1.8v4c0 3-2.1 5.1-5 6.4-2.9-1.3-5-3.4-5-6.4v-4z"/>'),menu:sv('<path d="M2.5 4.5h11M2.5 8h11M2.5 11.5h11"/>'),plus:sv('<path d="M8 3v10M3 8h10"/>'),x:sv('<path d="M4 4l8 8M12 4l-8 8"/>'),globe:sv('<circle cx="8" cy="8" r="5.5"/><path d="M2.5 8h11M8 2.5c2 2 2 9 0 11M8 2.5c-2 2-2 9 0 11"/>')};
@@ -676,7 +680,7 @@ t.url=u;if(t===cur&&!t.int)refresh();
 }
 function onLoad(t){
 try{var d=t.iframe.contentDocument;if(d&&d.title)t.title=d.title;}catch(e){}
-if(t.url&&!t.int&&!(BP.hist[0]&&BP.hist[0].u===t.url)){BP.hist.unshift({t:t.title,u:t.url,at:Date.now()});if(BP.hist.length>200)BP.hist.length=200;save();}
+if(BP.keepHist&&t.url&&!t.int&&!(BP.hist[0]&&BP.hist[0].u===t.url)){BP.hist.unshift({t:t.title,u:t.url,at:Date.now()});if(BP.hist.length>200)BP.hist.length=200;save();}
 tabbar();if(t===cur)dirty();
 }
 function newTab(u){
@@ -747,9 +751,9 @@ var tl=w.querySelector('.tiles'),def=[['DuckDuckGo(軽量版)','https://html.duc
 w.querySelector('.nts').addEventListener('submit',function(e){e.preventDefault();nav(cur,w.querySelector('input').value);});
 }else if(name==='settings'){
 var p=loadPrefs();
-w.innerHTML='<h2>設定</h2><div class="set"><label>検索エンジン<select id="bse"><option value="ddg">DuckDuckGo(軽量版)</option><option value="bing">Bing</option><option value="brave">Brave</option><option value="google">Google</option></select></label><label>ホームページ<input id="bhp" type="text" autocomplete="off" spellcheck="false"></label><label class="sw2">シールド(広告・トラッカーをブロック)<input id="bsh" type="checkbox"></label><label class="sw2">開発者ツールを開いたままにする<input id="bdv" type="checkbox"></label><div class="row2"><button type="button" class="sb" data-a="chist">履歴を消す</button><button type="button" class="sb" data-a="cbm">ブックマークを消す</button></div><h3>プロキシの情報</h3><p class="dim2">エンジン: Scramjet 1.1.0 / 通信: libcurl + Wisp(WebSocket)<br>Service Worker: <span id="bsw"></span></p></div>';
+w.innerHTML='<h2>設定</h2><div class="set"><label>検索エンジン<select id="bse"><option value="ddg">DuckDuckGo(軽量版)</option><option value="bing">Bing</option><option value="brave">Brave</option><option value="google">Google</option></select></label><label>ホームページ<input id="bhp" type="text" autocomplete="off" spellcheck="false"></label><label class="sw2">シールド(広告・トラッカーをブロック)<input id="bsh" type="checkbox"></label><label class="sw2">履歴を保存する(オフだと、記録を残しません)<input id="bkh" type="checkbox"></label><label class="sw2">開発者ツールを開いたままにする<input id="bdv" type="checkbox"></label><div class="row2"><button type="button" class="sb" data-a="chist">履歴を消す</button><button type="button" class="sb" data-a="cbm">ブックマークを消す</button></div><h3>プロキシの情報</h3><p class="dim2">エンジン: Scramjet 1.1.0 / 通信: libcurl + Wisp(WebSocket)<br>Service Worker: <span id="bsw"></span></p></div>';
 w.querySelector('#bse').value=SEARCH[p.se]?p.se:'ddg';
-w.querySelector('#bhp').value=BP.home;w.querySelector('#bsh').checked=!!BP.shields;w.querySelector('#bdv').checked=!!BP.dev;
+w.querySelector('#bhp').value=BP.home;w.querySelector('#bsh').checked=!!BP.shields;w.querySelector('#bdv').checked=!!BP.dev;w.querySelector('#bkh').checked=!!BP.keepHist;
 w.querySelector('#bsw').textContent=(navigator.serviceWorker&&navigator.serviceWorker.controller)?'有効':'まだ有効になっていません(再読み込みしてください)';
 w.addEventListener('change',function(e){
 var el=e.target;
@@ -757,11 +761,12 @@ if(el.id==='bse'){var pp=loadPrefs();pp.se=el.value;savePrefs(pp);SE=el.value;}
 else if(el.id==='bhp'){BP.home=el.value.trim()||'lacuna://newtab';save();}
 else if(el.id==='bsh'){BP.shields=el.checked;save();swPost({type:'shields',on:BP.shields});}
 else if(el.id==='bdv'){BP.dev=el.checked;save();}
+else if(el.id==='bkh'){BP.keepHist=el.checked;if(!el.checked){BP.hist=[];}save();}
 });
 }else if(name==='history'){
 w.innerHTML='<h2>履歴</h2><div class="row2"><input id="hq" type="text" placeholder="履歴を検索" aria-label="履歴を検索" autocomplete="off"><button type="button" class="sb" data-a="chist">すべて消す</button></div><div class="lst"></div>';
 var hl=w.querySelector('.lst');
-function hd(){hl.textContent='';var f=w.querySelector('#hq').value.toLowerCase();var n=0;BP.hist.forEach(function(x){if(f&&(x.t+x.u).toLowerCase().indexOf(f)<0)return;n++;var k=mk('button','li');k.type='button';k.setAttribute('data-go',x.u);k.appendChild(mk('b','',x.t||x.u));k.appendChild(mk('span','',x.u));k.appendChild(mk('i','',ago(x.at)));hl.appendChild(k);});if(!n)hl.appendChild(mk('p','dim2','履歴はありません'));}
+function hd(){hl.textContent='';var f=w.querySelector('#hq').value.toLowerCase();var n=0;BP.hist.forEach(function(x){if(f&&(x.t+x.u).toLowerCase().indexOf(f)<0)return;n++;var k=mk('button','li');k.type='button';k.setAttribute('data-go',x.u);k.appendChild(mk('b','',x.t||x.u));k.appendChild(mk('span','',x.u));k.appendChild(mk('i','',ago(x.at)));hl.appendChild(k);});if(!n)hl.appendChild(mk('p','dim2',BP.keepHist?'履歴はありません':'履歴の保存は、オフです(設定でオンにできます)'));}
 hd();w.querySelector('#hq').addEventListener('input',hd);
 }else if(name==='bookmarks'){
 w.innerHTML='<h2>ブックマーク</h2><div class="lst"></div>';
@@ -1079,7 +1084,7 @@ b.querySelector('[data-a=save]').addEventListener('click',save1);
 }
 function mkAbout(b){
 b.className+=' ab';
-b.innerHTML='<h1>Lacuna OS 0.16</h1><p>ブラウザの中で動くデスクトップです。ウィンドウは、移動、リサイズ、最小化、最大化、閉じるができます。</p><p>ターミナルから、ファイルとユーザー(root)を試せます。パスワードで保存データを暗号化しています。ブラウザアプリを追加しました(サーバー版のみ動きます)。次に作るもの: ブラウザアプリ。</p>';
+b.innerHTML='<h1>Lacuna OS 0.20</h1><p>ブラウザの中で動くデスクトップです。ウィンドウは、移動、リサイズ、最小化、最大化、閉じるができます。</p><p>ターミナルから、ファイルとユーザー(root)を試せます。パスワードで保存データを暗号化しています。ブラウザアプリを追加しました(サーバー版のみ動きます)。次に作るもの: ブラウザアプリ。</p>';
 }
 function mkNotes(b){
 var t=document.createElement('textarea');
@@ -1100,7 +1105,7 @@ function prompt(){hdr.textContent='┌──('+S.user+'㉿'+HN+')-['+short(S)+']
 function print(t,c){var d=document.createElement('div');d.textContent=t;if(c)d.className=c;out.appendChild(d);b.scrollTop=b.scrollHeight;}
 function ask(q){return new Promise(function(res){pend=res;inp.type='password';ps.textContent=q;hdr.hidden=true;inp.focus();});}
 var X={S:S,ask:ask};
-print('Lacuna OS 0.16 -- help でコマンド一覧','dim');
+print('Lacuna OS 0.20 -- help でコマンド一覧','dim');
 prompt();
 async function exec(v){
 var t=v.match(/"[^"]*"|'[^']*'|\S+/g).map(function(x){return /^["']/.test(x)?x.slice(1,-1):x;});
@@ -1213,7 +1218,7 @@ function sl(ms){return new Promise(function(r){setTimeout(r,ms);});}
 function hideMenu(){menu.hidden=true;mb.setAttribute('aria-expanded','false');var f=menu.querySelector('.fly');if(f)f.hidden=true;}
 function buildLaunchers(){
 icons.innerHTML='';
-menu.innerHTML='<input class="ms" type="search" placeholder="アプリを検索" aria-label="アプリを検索"><div class="mh"><b>ピン留め済み</b></div><div class="mg"></div><div class="mf"><span class="mu"><span class="av2"></span><span class="un"></span></span><span class="pw2"><button type="button" class="pb" aria-label="電源" aria-expanded="false"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M9 2v6M5 4.5a6 6 0 1 0 8 0"/></svg></button><div class="fly" hidden><button type="button" data-x="lo">ログアウト</button><button type="button" data-x="rb">再起動</button></div></span></div>';
+menu.innerHTML='<input class="ms" type="search" placeholder="アプリを検索" aria-label="アプリを検索"><div class="mh"><b>ピン留め済み</b></div><div class="mg"></div><div class="mf"><span class="mu"><span class="av2"></span><span class="un"></span></span><span class="pw2"><button type="button" class="pb" aria-label="電源" aria-expanded="false"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M9 2v6M5 4.5a6 6 0 1 0 8 0"/></svg></button><div class="fly" hidden><button type="button" data-x="lo">ログアウト</button><button type="button" data-x="rb">再起動</button><button type="button" data-x="pn" class="dg">緊急消去</button></div></span></div>';
 var al=ALLOW[session.mode],mg=menu.querySelector('.mg');
 Object.keys(APPS).forEach(function(id){
 if(al&&al.indexOf(id)<0)return;
@@ -1231,6 +1236,8 @@ menu.querySelector('.un').textContent=session.user;menu.querySelector('.av2').te
 menu.querySelector('.ms').addEventListener('input',function(e){var q=e.target.value.toLowerCase();mg.querySelectorAll('button').forEach(function(x){x.hidden=x.getAttribute('data-n').toLowerCase().indexOf(q)<0;});});
 menu.querySelector('[data-x=lo]').addEventListener('click',function(){hideMenu();logout();});
 menu.querySelector('[data-x=rb]').addEventListener('click',function(){hideMenu();reboot();});
+var pnb=menu.querySelector('[data-x=pn]'),pna=false;
+pnb.addEventListener('click',function(){if(!pna){pna=true;pnb.textContent='もう一度押すと、すべて消します';return;}hideMenu();panic();});
 }
 function closeAll(){wins.slice().forEach(close);menu.hidden=true;}
 function startDesktop(){
@@ -1242,6 +1249,28 @@ applyPrefs(session.mode==='safe'?PD:loadPrefs());buildLaunchers();openApp('term'
 if(session.mode==='recovery')toggleMax(cur);
 }
 async function logout(){closeAll();applyPrefs(PD);bootEl.hidden=false;bootEl.innerHTML='';await lockMem();lock();}
+var panicking=false;
+async function panic(){
+if(panicking)return;panicking=true;
+try{closeAll();}catch(e){}
+try{clearTimeout(stt);}catch(e){}
+fs=null;dk=null;dkRaw=null;meta=null;
+bootEl.hidden=false;
+bootEl.innerHTML='<div class="bx"><div class="spin" role="status" aria-label="消去中"></div><p>消去しています...</p></div>';
+var jobs=[];
+try{jobs.push(fetch('/api/panic',{method:'POST',credentials:'same-origin',keepalive:true}).catch(function(){}));}catch(e){}
+try{localStorage.clear();sessionStorage.clear();}catch(e){}
+function del(n){jobs.push(new Promise(function(res){var q=indexedDB.deleteDatabase(n);q.onsuccess=q.onerror=q.onblocked=function(){res();};setTimeout(res,2000);}));}
+try{if(indexedDB.databases){(await indexedDB.databases()).forEach(function(d){del(d.name);});}else{['lacuna','$scramjet'].forEach(del);}}catch(e){}
+try{if(window.caches)(await caches.keys()).forEach(function(k){jobs.push(caches.delete(k));});}catch(e){}
+try{if(navigator.serviceWorker)(await navigator.serviceWorker.getRegistrations()).forEach(function(r){jobs.push(r.unregister());});}catch(e){}
+await Promise.all(jobs);
+location.replace('/');
+}
+var spq=[];
+document.addEventListener('keydown',function(e){
+if(e.shiftKey&&e.key==='Escape'){var n=Date.now();spq=spq.filter(function(t){return n-t<1500;});spq.push(n);if(spq.length>=3){spq=[];panic();}}
+},true);
 async function reboot(){closeAll();applyPrefs(PD);await lockMem();power();}
 function bootReset(){
 bootEl.innerHTML='<div class="bx">'+LOGO+'<h1>初期化</h1><p>すべてのファイルとパスワードを消します。パスワードを忘れた時の最終手段です。</p><button id="rs" type="button">すべて消して初期設定へ</button><button id="rb" type="button">戻る</button></div>';
@@ -1306,10 +1335,13 @@ view();
 function lock(){
 bootEl.hidden=false;
 function tm(){var d=new Date();return '<div class="lt">'+d.toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'})+'</div><div class="ld">'+d.toLocaleDateString('ja-JP',{month:'long',day:'numeric',weekday:'long'})+'</div>';}
-bootEl.innerHTML='<div class="lk" id="lk" tabindex="0" role="button" aria-label="ロック解除"><span id="lc">'+tm()+'</span><p>クリック、またはキーを押してログイン</p></div>';
+bootEl.innerHTML='<div class="lk" id="lk" tabindex="0" role="button" aria-label="ロック解除"><span id="lc">'+tm()+'</span><p>クリック、またはキーを押してログイン</p></div><button type="button" class="pnb" id="lpn">緊急消去</button>';
 var el=document.getElementById('lk'),t=setInterval(function(){var c=document.getElementById('lc');if(c)c.innerHTML=tm();else clearInterval(t);},1000);
 function go(){clearInterval(t);document.removeEventListener('keydown',go);el.classList.add('up');setTimeout(login,RM?0:280);}
 el.addEventListener('click',go);document.addEventListener('keydown',go);
+var pb=document.getElementById('lpn'),pa=false;
+pb.addEventListener('click',function(e){e.stopPropagation();if(!pa){pa=true;pb.textContent='もう一度押すと、すべて消します';return;}clearInterval(t);document.removeEventListener('keydown',go);panic();});
+pb.addEventListener('keydown',function(e){e.stopPropagation();});
 el.focus();
 }
 function UD(){return{order:['normal','safe','recovery'],menu:true,timeout:0,quiet:true,fast:false,sb:false,sbHash:'',idle:10,pw:null};}

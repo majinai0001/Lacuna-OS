@@ -1,10 +1,12 @@
 // Scramjet のService Worker
-// 注意: プロキシ用のURL(/scramjet/ 以下)だけを処理する。それ以外は、そのまま通す。
+// 注意: プロキシ用のURL(PREFIX 以下。既定は /~/)だけを処理する。それ以外は、そのまま通す。
 // (全部の通信で設定を読もうとすると、準備前に失敗して、サイト全体が壊れる)
+importScripts("/proxy-config.js"); // プロキシのURLの頭と符号化(サーバーの環境変数で決まる)
 importScripts("/scram/scramjet.all.js");
 const { ScramjetServiceWorker } = $scramjetLoadWorker();
 
-const PREFIX = "/scramjet/";
+const PREFIX = self.__PROXY.prefix;
+const decode = (0, eval)("(" + self.__PROXY.codec.decode + ")");
 let scramjet = null; // 最初のプロキシ通信まで作らない(作ると、bare-muxの接続待ちが始まるため)
 let shields = null;  // 広告・トラッカーのブロック(null = まだ読んでいない)
 
@@ -16,7 +18,7 @@ const BLOCK = [
   "scorecardresearch.com", "hotjar.com", "quantserve.com", "amazon-adsystem.com", "moatads.com",
 ];
 
-function realUrl(u) { try { return decodeURIComponent(u.pathname.slice(PREFIX.length)); } catch { return u.pathname; } }
+function realUrl(u) { try { return decode(u.pathname.slice(PREFIX.length)); } catch { return u.pathname; } }
 function isBlocked(real) {
   try { const h = new URL(real).hostname; return BLOCK.some((d) => h === d || h.endsWith("." + d)); } catch { return false; }
 }
